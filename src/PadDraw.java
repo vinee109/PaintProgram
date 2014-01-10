@@ -64,13 +64,14 @@ public class PadDraw extends JComponent {
     private Shape shapeSelected;
     
     private Color current_color;
-    private ArrayList<Shape> shapesDrawn = new ArrayList<Shape>();
-    private ArrayList<Shape> shapesSaved; 
+    private ArrayList<Shape> shapesDrawn;
+    private ArrayList<Shape> shapesSaved;		// not sure what this does yet 
 	
 	public PadDraw(){
 		setDoubleBuffered(false);
 		setupAdapters();
 		addListeners();
+		shapesDrawn = new ArrayList<Shape>();
 	}
 	
 	public void addListeners(){
@@ -279,6 +280,7 @@ public class PadDraw extends JComponent {
             if(currentRect!= null){
     			graphics2D.drawRect(rectToDraw.x, rectToDraw.y, 
                         rectToDraw.width - 1, rectToDraw.height - 1);
+    			shapesDrawn.add(new Rectangle(rectToDraw));
     		}
             mousePressed(e);
         }
@@ -381,9 +383,12 @@ public class PadDraw extends JComponent {
 		
 		public void mouseReleased(MouseEvent e){
 			updateSize(e);
-			if (currentLine != null)
+			if (currentLine != null){
 				graphics2D.drawLine((int)lineToDraw.getX1(), (int)lineToDraw.getY1(),
 						(int)lineToDraw.getX2(), (int)lineToDraw.getY2());
+				shapesDrawn.add(new Line2D.Double((int)lineToDraw.getX1(), (int)lineToDraw.getY1(),
+						(int)lineToDraw.getX2(), (int)lineToDraw.getY2()));
+			}
 			mousePressed(e);
 		}
 		
