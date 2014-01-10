@@ -101,24 +101,8 @@ public class PaintWindow extends JFrame{
 		panel1.add(colorPanel);
 		panel1.add(thicknessPanel);
 		bottomPanel.add(panel1, BorderLayout.WEST);
-		/*
-		Icon iconB = new ImageIcon("blue.gif");
-		//the blue image icon
-		Icon iconM = new ImageIcon("magenta.gif");
-		//magenta image icon
-		Icon iconR = new ImageIcon("red.gif");
-		//red image icon
-		Icon iconBl = new ImageIcon("black.gif");
-		//black image icon
-		Icon iconG = new ImageIcon("green.gif");
-		// green image icon
-		//add the color buttons:
-		makeColorButton(Color.BLUE, iconB);
-		makeColorButton(Color.MAGENTA, iconM);
-		makeColorButton(Color.RED, iconR);
-		makeColorButton(Color.GREEN, iconG);
-		makeColorButton(Color.BLACK, iconBl);
-		*/
+		
+		addMenuBar();
 		
 		JButton lineButton = new JButton(new ImageIcon("line.gif"));
 		lineButton.setPreferredSize(new Dimension(20,20));
@@ -187,23 +171,12 @@ public class PaintWindow extends JFrame{
 		panel.add(clearButton);
 	}
 	
-	/*
-	* makes a button that changes the color
-	* @param color the color used for the button
-	*/
-	public void makeColorButton(final Color color, Icon icon){
-		JButton tempButton = new JButton(icon);
-		/*
-		tempButton.setBackground(color);
-		tempButton.setOpaque(true);
-		tempButton.setBorderPainted(false);
-		*/
-		tempButton.setPreferredSize(new Dimension(20, 20));
-		panel.add(tempButton);
-		tempButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				drawPad.changeColor(color);
-			}
-		});
+	public void addMenuBar(){
+		JMenuBar menuBar = new JMenuBar();
+		JMenu saveMenu = new JMenu("Save");
+		JMenu openMenu = new JMenu("Open");
+		menuBar.add(saveMenu);
+		menuBar.add(openMenu);
+		setJMenuBar(menuBar);
 	}
 }
