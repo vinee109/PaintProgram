@@ -150,7 +150,11 @@ public class PadDraw extends JComponent {
 	//sets the rendering
 	//runs the clear() method
 	//then it draws the image
-	public void paintComponent(Graphics g){
+	public void paintComponent(Graphics g2){
+		Graphics2D g = (Graphics2D)g2;
+		g.setColor(current_color);
+		g.setStroke(new BasicStroke(thickness));
+		
 		if(image == null){
 			image = createImage(getSize().width, getSize().height);
 			graphics2D = (Graphics2D)image.getGraphics();
