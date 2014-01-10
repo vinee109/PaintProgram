@@ -65,7 +65,6 @@ public class PadDraw extends JComponent {
     
     private Color current_color;
     private ArrayList<Shape> shapesDrawn;
-    private ArrayList<Shape> shapesSaved;		// not sure what this does yet 
 	
 	public PadDraw(){
 		setDoubleBuffered(false);
@@ -199,15 +198,13 @@ public class PadDraw extends JComponent {
 			if (shapeSelected != null){
 				g.draw(shapeSelected);
 				//System.out.println(shapesSaved.size());
-				for (int i = 0; i < shapesSaved.size(); i++){
-					Shape shape = shapesSaved.get(i);
+				for (int i = 0; i < shapesDrawn.size(); i++){
+					Shape shape = shapesDrawn.get(i);
 					if ( shape != shapeSelected){
 						//System.out.println("draw");
 						g.draw(shape);
 					}
 				}
-				shapesDrawn.addAll(shapesSaved);
-				shapesSaved = new ArrayList<Shape>();
 			}
 		}
 	}
@@ -425,14 +422,93 @@ public class PadDraw extends JComponent {
 	}
 	
 	// ***************************** Circle *******************************************
-		public void updateDrawableCirc(int compWidth, int compHeight){
+	public void updateDrawableCirc(int compWidth, int compHeight){
+		int center_x = (int)currentCirc.getCenterX();
+        int center_y = (int)currentCirc.getCenterY();
+        int x = (int)currentCirc.getX();
+        int y = (int)currentCirc.getY();
+        int width = (int)currentCirc.getWidth();
+        int height = (int)currentCirc.getHeight();
+        /*
+        System.out.println("CenterX = " + center_x);
+        System.out.println("CenterY = " + center_y);
+        System.out.println("x = " + x);
+        System.out.println("y = " + y);
+        System.out.println("width = " + width);
+        System.out.println("height = " + height);
+        */
+        
+        //Make the width and height positive, if necessary.
+        if (width < 0) {
+            width = 0 - width;
+            x = x - width + 1; 
+            if (x < 0) {
+                width += x; 
+                x = 0;
+            }
+        }
+        if (height < 0) {
+            height = 0 - height;
+            y = y - height + 1; 
+            if (y < 0) {
+                height += y; 
+                y = 0;
+            }
+        }
+ 
+        //The rectangle shouldn't extend past the drawing area.
+        if ((x + width) > compWidth) {
+            width = compWidth - x;
+            height = width;
+        }
+        if ((y + height) > compHeight) {
+            height = compHeight - y;
+            width = height;
+        }
+       
+        
+        //Update rectToDraw after saving old value.
+        if (circToDraw != null) {
+            previousCircDrawn.setFrame(
+                        circToDraw.getX(), circToDraw.getY(), 
+                        circToDraw.getWidth(), circToDraw.getHeight());
+            circToDraw.setFrame(x, y, width, height);
+        } else {
+            circToDraw = new Ellipse2D.Double(x, y, width, height);
+        }
+	}
+	
+	private class CircListener extends MouseInputAdapter{
+		public void mousePressed(MouseEvent e){
+			int x = e.getX();
+			int y = e.getY();
+			System.out.println("(" + x + ", " + y + ")");
+			currentCirc = new Ellipse2D.Double(x, y, 0, 0);
+			
+			/*
+			Ellipse2D.Double circ = new Ellipse2D.Double(x, y, 50, 50);
+			System.out.println("(x,y) = ( " + x + ", " + y + " )");
+			System.out.println("Center = ( " + circ.getCenterX() + ", " + circ.getCenterY() + " )");
+			graphics2D.draw(circ);
+			*/
+			updateDrawableCirc(getWidth(), getHeight());
+			repaint();
+		}
+		
+		public void mouseDragged(MouseEvent e){
+			updateSize(e);
+		}
+		
+		public void mouseReleased(MouseEvent e){
+			updateSize(e);
+			/*
 			int center_x = (int)currentCirc.getCenterX();
 	        int center_y = (int)currentCirc.getCenterY();
 	        int x = (int)currentCirc.getX();
 	        int y = (int)currentCirc.getY();
 	        int width = (int)currentCirc.getWidth();
 	        int height = (int)currentCirc.getHeight();
-	        /*
+	        
 	        System.out.println("CenterX = " + center_x);
 	        System.out.println("CenterY = " + center_y);
 	        System.out.println("x = " + x);
@@ -440,369 +516,289 @@ public class PadDraw extends JComponent {
 	        System.out.println("width = " + width);
 	        System.out.println("height = " + height);
 	        */
-	        
-	        //Make the width and height positive, if necessary.
-	        if (width < 0) {
-	            width = 0 - width;
-	            x = x - width + 1; 
-	            if (x < 0) {
-	                width += x; 
-	                x = 0;
-	            }
-	        }
-	        if (height < 0) {
-	            height = 0 - height;
-	            y = y - height + 1; 
-	            if (y < 0) {
-	                height += y; 
-	                y = 0;
-	            }
-	        }
-	 
-	        //The rectangle shouldn't extend past the drawing area.
-	        if ((x + width) > compWidth) {
-	            width = compWidth - x;
-	            height = width;
-	        }
-	        if ((y + height) > compHeight) {
-	            height = compHeight - y;
-	            width = height;
-	        }
-	       
-	        
-	        //Update rectToDraw after saving old value.
-	        if (circToDraw != null) {
-	            previousCircDrawn.setFrame(
-	                        circToDraw.getX(), circToDraw.getY(), 
-	                        circToDraw.getWidth(), circToDraw.getHeight());
-	            circToDraw.setFrame(x, y, width, height);
-	        } else {
-	            circToDraw = new Ellipse2D.Double(x, y, width, height);
-	        }
+			if(currentCirc!= null){
+				//graphics2D.draw(currentCirc);
+    			graphics2D.draw(new Ellipse2D.Double(circToDraw.getX(), circToDraw.getY(), 
+                        circToDraw.getWidth(), circToDraw.getHeight()));
+    			shapesDrawn.add(new Ellipse2D.Double(circToDraw.getX(), circToDraw.getY(), 
+                        circToDraw.getWidth(), circToDraw.getHeight()));
+    			repaint();
+    			
+    		}
+			mousePressed(e);
+			//System.out.println(shapesDrawn);
 		}
-		private class CircListener extends MouseInputAdapter{
-			public void mousePressed(MouseEvent e){
-				int x = e.getX();
-				int y = e.getY();
-				System.out.println("(" + x + ", " + y + ")");
-				currentCirc = new Ellipse2D.Double(x, y, 0, 0);
-				
-				/*
-				Ellipse2D.Double circ = new Ellipse2D.Double(x, y, 50, 50);
-				System.out.println("(x,y) = ( " + x + ", " + y + " )");
-				System.out.println("Center = ( " + circ.getCenterX() + ", " + circ.getCenterY() + " )");
-				graphics2D.draw(circ);
-				*/
-				updateDrawableCirc(getWidth(), getHeight());
+		
+		public void updateSize(MouseEvent e){
+			int x = e.getX();
+			int y = e.getY();
+			double center_x = currentCirc.getCenterX();
+			double center_y = currentCirc.getCenterY();
+			//System.out.println("(" + center_x + ", " + center_y + ")");
+			double radius = Math.sqrt(Math.pow(center_x - x, 2) + Math.pow(center_y - y, 2));
+			//System.out.println(radius);
+			currentCirc.setFrame(center_x - radius, center_y - radius, radius*2, radius*2);
+			updateDrawableCirc(getWidth(), getHeight());
+			Rectangle totalRepaint = previousCircDrawn.getBounds().union(circToDraw.getBounds());
+			repaint(totalRepaint.x - thickness, totalRepaint.y - thickness, totalRepaint.width + 2*thickness + 1, totalRepaint.height + 2*thickness + 1);
+			//graphics2D.draw(totalRepaint);
+		}
+	}
+	
+	//******************************* Arc ********************************************************
+	public Point getCircleCenter(Point a, Point b, Point c){
+		double ax = a.getX();
+		double ay = a.getY();
+		double bx = b.getX();
+		double by = b.getY();
+		double cx = c.getX();
+		double cy = c.getY();
+
+		double A = bx - ax;
+		double B = by - ay;
+		double C = cx - ax;
+		double D = cy - ay;
+
+		double E = A * (ax + bx) + B * (ay + by);
+		double F = C * (ax + cx) + D * (ay + cy);
+
+		double G = 2 * (A * (cy - by) - B * (cx - bx));
+		/*
+		System.out.println("a = " + a);
+		System.out.println("b = " + b);
+		System.out.println("c = " + c);
+		*/
+		if (G == 0.0)
+			return null; // a, b, c must be collinear
+
+		double px = (D * E - B * F) / G;
+		double py = (A * F - C * E) / G;
+		return new Point((int)px, (int)py);
+	}
+	
+	public double makeAnglePos(double angle){
+		if ( angle < 0)
+			return 360 + angle;
+		else
+			return angle;
+	}
+	
+	public double getNearestAnglePhase(double limit, double source, int dir){
+		double value = source;
+		if (dir > 0){
+			while (value < limit)
+				value += 360.0;
+		}
+		else if (dir < 0){
+			while ( value > limit )
+				value -= 360.0;
+		}
+		return value;
+	}
+	
+	public Arc2D makeArc(Point s, Point mid, Point e){
+		
+		System.out.println("s = " + s);
+		System.out.println("mid = " + mid);
+		System.out.println("e = " + e);
+		Point c = getCircleCenter(s, mid, e);
+		  double radius = c.distance(s);
+
+		  double startAngle = makeAnglePos(Math.toDegrees(-Math
+		      .atan2(s.y - c.y, s.x - c.x)));
+		  double midAngle = makeAnglePos(Math.toDegrees(-Math.atan2(mid.y - c.y, mid.x
+		      - c.x)));
+		  double endAngle = makeAnglePos(Math.toDegrees(-Math.atan2(e.y - c.y, e.x - c.x)));
+
+		  // Now compute the phase-adjusted angles begining from startAngle, moving positive and negative.
+		  double midDecreasing = getNearestAnglePhase(startAngle, midAngle, -1);
+		  double midIncreasing = getNearestAnglePhase(startAngle, midAngle, 1);
+		  double endDecreasing = getNearestAnglePhase(midDecreasing, endAngle, -1);
+		  double endIncreasing = getNearestAnglePhase(midIncreasing, endAngle, 1);
+
+		  // Each path from start -> mid -> end is technically, but one will wrap around the entire
+		  // circle, which isn't what we want. Pick the one that with the smaller angular change.
+		  double extent = 0;
+		  if (Math.abs(endDecreasing - startAngle) < Math.abs(endIncreasing - startAngle)) {
+		    extent = endDecreasing - startAngle;
+		  } else {
+		    extent = endIncreasing - startAngle;
+		  }
+
+		  return new Arc2D.Double(c.x - radius, c.y - radius, radius * 2, radius * 2, startAngle, extent,
+		      Arc2D.OPEN);
+	}
+	
+	public void updateDrawableArc(int compWidth, int compHeight){
+		double x = currentArc.getX();
+        double y = currentArc.getY();
+        double width = currentArc.getWidth();
+        double height = currentArc.getHeight();
+        double startAngle = currentArc.getAngleStart();
+        double extentAngle = currentArc.getAngleExtent();
+        int type = currentArc.getArcType();
+ 
+        //Make the width and height positive, if necessary.
+        if (width < 0) {
+            width = 0 - width;
+            x = x - width + 1; 
+            if (x < 0) {
+                width += x; 
+                x = 0;
+            }
+        }
+        if (height < 0) {
+            height = 0 - height;
+            y = y - height + 1; 
+            if (y < 0) {
+                height += y; 
+                y = 0;
+            }
+        }
+ 
+        //The rectangle shouldn't extend past the drawing area.
+        if ((x + width) > compWidth) {
+            width = compWidth - x;
+        }
+        if ((y + height) > compHeight) {
+            height = compHeight - y;
+        }
+       
+        //Update rectToDraw after saving old value.
+        if (arcToDraw != null) {
+            previousArcDrawn.setArc(arcToDraw.getX(), arcToDraw.getY(), arcToDraw.getWidth(),
+                        arcToDraw.getHeight(), arcToDraw.getAngleStart(), arcToDraw.getAngleExtent(), 
+                        arcToDraw.getArcType());
+            arcToDraw.setArc(x, y, width, height, startAngle, extentAngle, type);
+        } else {
+            arcToDraw = new Arc2D.Double(x, y, width, height, startAngle, extentAngle, type);
+        }
+	}
+	
+	private class ArcListener extends MouseInputAdapter{
+		private int initialX;
+		private int initialY;
+		
+		public void mousePressed(MouseEvent e){
+			int x = e.getX();
+			int y = e.getY();
+			initialX = x;
+			initialY = y;
+			System.out.println("x = " + x);
+			System.out.println("y = " + y);
+			currentArc = new Arc2D.Double(x, y, 0, 0, 0, 0, Arc2D.OPEN);
+			System.out.println("arc x = " + currentArc.getX());
+			System.out.println("arc y = " + currentArc.getY() + "\n" );
+			updateDrawableArc(getWidth(), getHeight());
+			repaint();
+		}
+		
+		public void mouseDragged(MouseEvent e){
+			updateSize(e);
+		}
+		
+		public void mouseReleased(MouseEvent e){
+			updateSize(e);
+			if(currentArc!= null){
+				Arc2D arc = new Arc2D.Double(arcToDraw.getX(),
+						arcToDraw.getY(),
+						arcToDraw.getWidth(),
+						arcToDraw.getHeight(),
+						arcToDraw.getAngleStart(),
+						arcToDraw.getAngleExtent(),
+						arcToDraw.getArcType());
+    			graphics2D.draw(arc);
+    			repaint();
+    			shapesDrawn.add(arc);
+    		}
+            mousePressed(e);
+		}
+		
+		public void updateSize(MouseEvent e){
+			int x = e.getX();
+            int y = e.getY();
+            /*
+            System.out.println("end x = " + x);
+            System.out.println("end y = " + y);
+            System.out.println("initialx = " + initialX);
+            System.out.println("initialy = " + initialY);
+            System.out.println(currentArc.getX());
+            System.out.println(currentArc.getY());
+            */
+            
+            Arc2D dim = makeArc(new Point(initialX, initialY), 
+            		new Point( (x+initialX)/2, y), new Point(x, initialY));
+            /*
+            System.out.println("width = " + dim.getWidth());
+            System.out.println("height = " + dim.getHeight());
+            System.out.println("start x = " + dim.getX());
+            System.out.println(" stary y = " + dim.getY());
+            System.out.println();
+            */
+            currentArc.setArc(dim);
+            updateDrawableArc(getWidth(), getHeight());
+            Rectangle totalRepaint = arcToDraw.getBounds().union(previousArcDrawn.getBounds());
+            repaint(totalRepaint.x - thickness, totalRepaint.y - thickness,
+                    totalRepaint.width + 2*thickness, totalRepaint.height + 2*thickness);
+		}
+	}
+	//******************************* Move ********************************************
+	private class MoveListener extends MouseInputAdapter{
+		int preX;
+		int preY;
+		
+		public void mousePressed(MouseEvent e){
+			System.out.println("mouse pressed");
+			int x = e.getX();
+			int y = e.getY();
+			//System.out.println(shapesDrawn);
+			
+			//checks if a shape is selected
+			int i = 0;
+			while ( i < shapesDrawn.size() && !shapesDrawn.get(i).contains(x, y)){
+				if (shapesDrawn.get(i).contains(x, y))
+					shapeSelected = shapesDrawn.get(i);
+				i++;
+			}
+			
+			shapeSelected = shapesDrawn.get(i);
+			if (shapeSelected != null){
+				preX = shapeSelected.getBounds().x - x;
+				preY = shapeSelected.getBounds().y - y;
+				updateLocation(e);
+			}
+			System.out.println("selected shape: " + shapeSelected);
+		}
+		
+		public void mouseDragged(MouseEvent e){
+			System.out.println("mouse dragged");
+			int x = e.getX();
+			int y = e.getY();
+			if (x < getWidth() && y < getHeight() && shapeSelected.contains(x, y))
+				updateLocation(e);
+			clear();
+		}
+		
+		public void mouseReleased(MouseEvent e){
+			System.out.println("mouse released");
+			if ( shapeSelected.contains(e.getPoint()))
+				updateLocation(e);
+			graphics2D.draw(shapeSelected);
+			
+			System.out.println("size of shapesDrawn = " + shapesDrawn.size() );
+			for ( int i = 0; i < shapesDrawn.size(); i++ ){
+				System.out.println(shapesDrawn.get(i));
+				graphics2D.draw(shapesDrawn.get(i));
 				repaint();
 			}
 			
-			public void mouseDragged(MouseEvent e){
-				updateSize(e);
-			}
-			
-			public void mouseReleased(MouseEvent e){
-				updateSize(e);
-				/*
-				int center_x = (int)currentCirc.getCenterX();
-		        int center_y = (int)currentCirc.getCenterY();
-		        int x = (int)currentCirc.getX();
-		        int y = (int)currentCirc.getY();
-		        int width = (int)currentCirc.getWidth();
-		        int height = (int)currentCirc.getHeight();
-		        
-		        System.out.println("CenterX = " + center_x);
-		        System.out.println("CenterY = " + center_y);
-		        System.out.println("x = " + x);
-		        System.out.println("y = " + y);
-		        System.out.println("width = " + width);
-		        System.out.println("height = " + height);
-		        */
-				if(currentCirc!= null){
-					//graphics2D.draw(currentCirc);
-	    			graphics2D.draw(new Ellipse2D.Double(circToDraw.getX(), circToDraw.getY(), 
-	                        circToDraw.getWidth(), circToDraw.getHeight()));
-	    			shapesDrawn.add(new Ellipse2D.Double(circToDraw.getX(), circToDraw.getY(), 
-	                        circToDraw.getWidth(), circToDraw.getHeight()));
-	    			repaint();
-	    			
-	    		}
-				mousePressed(e);
-				//System.out.println(shapesDrawn);
-			}
-			
-			public void updateSize(MouseEvent e){
-				int x = e.getX();
-				int y = e.getY();
-				double center_x = currentCirc.getCenterX();
-				double center_y = currentCirc.getCenterY();
-				//System.out.println("(" + center_x + ", " + center_y + ")");
-				double radius = Math.sqrt(Math.pow(center_x - x, 2) + Math.pow(center_y - y, 2));
-				//System.out.println(radius);
-				currentCirc.setFrame(center_x - radius, center_y - radius, radius*2, radius*2);
-				updateDrawableCirc(getWidth(), getHeight());
-				Rectangle totalRepaint = previousCircDrawn.getBounds().union(circToDraw.getBounds());
-				repaint(totalRepaint.x - thickness, totalRepaint.y - thickness, totalRepaint.width + 2*thickness + 1, totalRepaint.height + 2*thickness + 1);
-				//graphics2D.draw(totalRepaint);
-			}
+			repaint();
 		}
 		
-		//******************************* Arc ********************************************************
-		public Point getCircleCenter(Point a, Point b, Point c){
-			double ax = a.getX();
-			double ay = a.getY();
-			double bx = b.getX();
-			double by = b.getY();
-			double cx = c.getX();
-			double cy = c.getY();
-
-			double A = bx - ax;
-			double B = by - ay;
-			double C = cx - ax;
-			double D = cy - ay;
-
-			double E = A * (ax + bx) + B * (ay + by);
-			double F = C * (ax + cx) + D * (ay + cy);
-
-			double G = 2 * (A * (cy - by) - B * (cx - bx));
-			/*
-			System.out.println("a = " + a);
-			System.out.println("b = " + b);
-			System.out.println("c = " + c);
-			*/
-			if (G == 0.0)
-				return null; // a, b, c must be collinear
-
-			double px = (D * E - B * F) / G;
-			double py = (A * F - C * E) / G;
-			return new Point((int)px, (int)py);
-		}
-		
-		public double makeAnglePos(double angle){
-			if ( angle < 0)
-				return 360 + angle;
-			else
-				return angle;
-		}
-		
-		public double getNearestAnglePhase(double limit, double source, int dir){
-			double value = source;
-			if (dir > 0){
-				while (value < limit)
-					value += 360.0;
-			}
-			else if (dir < 0){
-				while ( value > limit )
-					value -= 360.0;
-			}
-			return value;
-		}
-		
-		public Arc2D makeArc(Point s, Point mid, Point e){
-			
-			System.out.println("s = " + s);
-			System.out.println("mid = " + mid);
-			System.out.println("e = " + e);
-			Point c = getCircleCenter(s, mid, e);
-			  double radius = c.distance(s);
-
-			  double startAngle = makeAnglePos(Math.toDegrees(-Math
-			      .atan2(s.y - c.y, s.x - c.x)));
-			  double midAngle = makeAnglePos(Math.toDegrees(-Math.atan2(mid.y - c.y, mid.x
-			      - c.x)));
-			  double endAngle = makeAnglePos(Math.toDegrees(-Math.atan2(e.y - c.y, e.x - c.x)));
-
-			  // Now compute the phase-adjusted angles begining from startAngle, moving positive and negative.
-			  double midDecreasing = getNearestAnglePhase(startAngle, midAngle, -1);
-			  double midIncreasing = getNearestAnglePhase(startAngle, midAngle, 1);
-			  double endDecreasing = getNearestAnglePhase(midDecreasing, endAngle, -1);
-			  double endIncreasing = getNearestAnglePhase(midIncreasing, endAngle, 1);
-
-			  // Each path from start -> mid -> end is technically, but one will wrap around the entire
-			  // circle, which isn't what we want. Pick the one that with the smaller angular change.
-			  double extent = 0;
-			  if (Math.abs(endDecreasing - startAngle) < Math.abs(endIncreasing - startAngle)) {
-			    extent = endDecreasing - startAngle;
-			  } else {
-			    extent = endIncreasing - startAngle;
-			  }
-
-			  return new Arc2D.Double(c.x - radius, c.y - radius, radius * 2, radius * 2, startAngle, extent,
-			      Arc2D.OPEN);
-		}
-		
-		public void updateDrawableArc(int compWidth, int compHeight){
-			double x = currentArc.getX();
-	        double y = currentArc.getY();
-	        double width = currentArc.getWidth();
-	        double height = currentArc.getHeight();
-	        double startAngle = currentArc.getAngleStart();
-	        double extentAngle = currentArc.getAngleExtent();
-	        int type = currentArc.getArcType();
-	 
-	        //Make the width and height positive, if necessary.
-	        if (width < 0) {
-	            width = 0 - width;
-	            x = x - width + 1; 
-	            if (x < 0) {
-	                width += x; 
-	                x = 0;
-	            }
-	        }
-	        if (height < 0) {
-	            height = 0 - height;
-	            y = y - height + 1; 
-	            if (y < 0) {
-	                height += y; 
-	                y = 0;
-	            }
-	        }
-	 
-	        //The rectangle shouldn't extend past the drawing area.
-	        if ((x + width) > compWidth) {
-	            width = compWidth - x;
-	        }
-	        if ((y + height) > compHeight) {
-	            height = compHeight - y;
-	        }
-	       
-	        //Update rectToDraw after saving old value.
-	        if (arcToDraw != null) {
-	            previousArcDrawn.setArc(arcToDraw.getX(), arcToDraw.getY(), arcToDraw.getWidth(),
-	                        arcToDraw.getHeight(), arcToDraw.getAngleStart(), arcToDraw.getAngleExtent(), 
-	                        arcToDraw.getArcType());
-	            arcToDraw.setArc(x, y, width, height, startAngle, extentAngle, type);
-	        } else {
-	            arcToDraw = new Arc2D.Double(x, y, width, height, startAngle, extentAngle, type);
-	        }
-		}
-		
-		private class ArcListener extends MouseInputAdapter{
-			private int initialX;
-			private int initialY;
-			
-			public void mousePressed(MouseEvent e){
-				int x = e.getX();
-				int y = e.getY();
-				initialX = x;
-				initialY = y;
-				System.out.println("x = " + x);
-				System.out.println("y = " + y);
-				currentArc = new Arc2D.Double(x, y, 0, 0, 0, 0, Arc2D.OPEN);
-				System.out.println("arc x = " + currentArc.getX());
-				System.out.println("arc y = " + currentArc.getY() + "\n" );
-				updateDrawableArc(getWidth(), getHeight());
-				repaint();
-			}
-			
-			public void mouseDragged(MouseEvent e){
-				updateSize(e);
-			}
-			
-			public void mouseReleased(MouseEvent e){
-				updateSize(e);
-				if(currentArc!= null){
-					Arc2D arc = new Arc2D.Double(arcToDraw.getX(),
-							arcToDraw.getY(),
-							arcToDraw.getWidth(),
-							arcToDraw.getHeight(),
-							arcToDraw.getAngleStart(),
-							arcToDraw.getAngleExtent(),
-							arcToDraw.getArcType());
-	    			graphics2D.draw(arc);
-	    			repaint();
-	    			shapesDrawn.add(arc);
-	    		}
-	            mousePressed(e);
-			}
-			
-			public void updateSize(MouseEvent e){
-				int x = e.getX();
-	            int y = e.getY();
-	            /*
-	            System.out.println("end x = " + x);
-	            System.out.println("end y = " + y);
-	            System.out.println("initialx = " + initialX);
-	            System.out.println("initialy = " + initialY);
-	            System.out.println(currentArc.getX());
-	            System.out.println(currentArc.getY());
-	            */
-	            
-	            Arc2D dim = makeArc(new Point(initialX, initialY), 
-	            		new Point( (x+initialX)/2, y), new Point(x, initialY));
-	            /*
-	            System.out.println("width = " + dim.getWidth());
-	            System.out.println("height = " + dim.getHeight());
-	            System.out.println("start x = " + dim.getX());
-	            System.out.println(" stary y = " + dim.getY());
-	            System.out.println();
-	            */
-	            currentArc.setArc(dim);
-	            updateDrawableArc(getWidth(), getHeight());
-	            Rectangle totalRepaint = arcToDraw.getBounds().union(previousArcDrawn.getBounds());
-	            repaint(totalRepaint.x - thickness, totalRepaint.y - thickness,
-	                    totalRepaint.width + 2*thickness, totalRepaint.height + 2*thickness);
+		public void updateLocation(MouseEvent e){
+			if (shapeSelected instanceof Rectangle){
+				((Rectangle) shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
 			}
 		}
-		//******************************* Move ********************************************
-		private class MoveListener extends MouseInputAdapter{
-			int preX;
-			int preY;
-			
-			public void mousePressed(MouseEvent e){
-				System.out.println("mouse pressed");
-				int x = e.getX();
-				int y = e.getY();
-				//System.out.println(shapesDrawn);
-				
-				//checks if a shape is selected
-				int i = 0;
-				
-				while ( i < shapesDrawn.size() && !shapesDrawn.get(i).contains(x, y)){
-					if (shapesDrawn.get(i).contains(x, y))
-						shapeSelected = shapesDrawn.get(i);
-					i++;
-				}
-				
-				shapeSelected = shapesDrawn.get(i);
-				//System.out.println(shapeSelected);
-				if (shapeSelected != null){
-					preX = shapeSelected.getBounds().x - x;
-					preY = shapeSelected.getBounds().y - y;
-					updateLocation(e);
-				}
-			}
-			
-			public void mouseDragged(MouseEvent e){
-				System.out.println("mouse dragged");
-				int x = e.getX();
-				int y = e.getY();
-				if (x < getWidth() && y < getHeight() && shapeSelected.contains(x, y))
-					updateLocation(e);
-				shapesSaved.addAll(shapesDrawn);
-				clear();
-			}
-			
-			public void mouseReleased(MouseEvent e){
-				System.out.println("mouse released");
-				if ( shapeSelected.contains(e.getPoint()))
-					updateLocation(e);
-				graphics2D.draw(shapeSelected);
-				
-				System.out.println("size of shapesDrawn = " + shapesDrawn.size() );
-				for ( int i = 0; i < shapesDrawn.size(); i++ ){
-					System.out.println(shapesDrawn.get(i));
-					graphics2D.draw(shapesDrawn.get(i));
-					repaint();
-				}
-				
-				repaint();
-			}
-			
-			public void updateLocation(MouseEvent e){
-				if (shapeSelected instanceof Rectangle){
-					((Rectangle) shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
-				}
-			}
-		}
+	}
 }
