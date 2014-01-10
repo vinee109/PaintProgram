@@ -124,6 +124,7 @@ public class PadDraw extends JComponent {
 		straightLineAdapter = new StraightLineListener();
 		circAdapter = new CircListener();
 		arcAdapter = new ArcListener();
+		moveAdapter = new MoveListener();
 	}
 	
 	// method to draw a rectangle using two points on the diagnoal
@@ -191,6 +192,22 @@ public class PadDraw extends JComponent {
 			if ( currentArc != null){
 				g.drawArc((int)arcToDraw.getX(),(int) arcToDraw.getY(), (int)arcToDraw.getWidth(), 
 						(int)arcToDraw.getHeight(), (int)arcToDraw.getAngleStart(), (int)arcToDraw.getAngleExtent());
+			}
+		}
+		
+		if(option == MOVE){
+			if (shapeSelected != null){
+				g.draw(shapeSelected);
+				//System.out.println(shapesSaved.size());
+				for (int i = 0; i < shapesSaved.size(); i++){
+					Shape shape = shapesSaved.get(i);
+					if ( shape != shapeSelected){
+						//System.out.println("draw");
+						g.draw(shape);
+					}
+				}
+				shapesDrawn.addAll(shapesSaved);
+				shapesSaved = new ArrayList<Shape>();
 			}
 		}
 	}
@@ -308,8 +325,8 @@ public class PadDraw extends JComponent {
                                 y - currentRect.y);
             updateDrawableRect(getWidth(), getHeight());
             Rectangle totalRepaint = rectToDraw.union(previousRectDrawn);
-            repaint(totalRepaint.x, totalRepaint.y,
-                    totalRepaint.width, totalRepaint.height);
+            repaint(totalRepaint.x - thickness, totalRepaint.y - thickness,
+                    totalRepaint.width + 2*thickness, totalRepaint.height + 2*thickness);
         }
 	}
 	// ********************* Line ******************************************
@@ -402,8 +419,8 @@ public class PadDraw extends JComponent {
             currentLine.setLine(currentLine.getP1(), new Point2D.Double(x, y));
             updateDrawableStraightLine(getWidth(), getHeight());
             Rectangle totalRepaint = previousLineDrawn.getBounds().union(lineToDraw.getBounds());
-            repaint(totalRepaint.x, totalRepaint.y,
-                    totalRepaint.width*2, totalRepaint.height*2);
+            repaint(totalRepaint.x - thickness, totalRepaint.y - thickness,
+                    totalRepaint.width*2 + 2*thickness, totalRepaint.height*2 + 2*thickness);
         }
 	}
 	
@@ -725,6 +742,67 @@ public class PadDraw extends JComponent {
 	            Rectangle totalRepaint = arcToDraw.getBounds().union(previousArcDrawn.getBounds());
 	            repaint(totalRepaint.x - thickness, totalRepaint.y - thickness,
 	                    totalRepaint.width + 2*thickness, totalRepaint.height + 2*thickness);
+			}
+		}
+		//******************************* Move ********************************************
+		private class MoveListener extends MouseInputAdapter{
+			int preX;
+			int preY;
+			
+			public void mousePressed(MouseEvent e){
+				System.out.println("mouse pressed");
+				int x = e.getX();
+				int y = e.getY();
+				//System.out.println(shapesDrawn);
+				
+				//checks if a shape is selected
+				int i = 0;
+				
+				while ( i < shapesDrawn.size() && !shapesDrawn.get(i).contains(x, y)){
+					if (shapesDrawn.get(i).contains(x, y))
+						shapeSelected = shapesDrawn.get(i);
+					i++;
+				}
+				
+				shapeSelected = shapesDrawn.get(i);
+				//System.out.println(shapeSelected);
+				if (shapeSelected != null){
+					preX = shapeSelected.getBounds().x - x;
+					preY = shapeSelected.getBounds().y - y;
+					updateLocation(e);
+				}
+			}
+			
+			public void mouseDragged(MouseEvent e){
+				System.out.println("mouse dragged");
+				int x = e.getX();
+				int y = e.getY();
+				if (x < getWidth() && y < getHeight() && shapeSelected.contains(x, y))
+					updateLocation(e);
+				shapesSaved.addAll(shapesDrawn);
+				clear();
+			}
+			
+			public void mouseReleased(MouseEvent e){
+				System.out.println("mouse released");
+				if ( shapeSelected.contains(e.getPoint()))
+					updateLocation(e);
+				graphics2D.draw(shapeSelected);
+				
+				System.out.println("size of shapesDrawn = " + shapesDrawn.size() );
+				for ( int i = 0; i < shapesDrawn.size(); i++ ){
+					System.out.println(shapesDrawn.get(i));
+					graphics2D.draw(shapesDrawn.get(i));
+					repaint();
+				}
+				
+				repaint();
+			}
+			
+			public void updateLocation(MouseEvent e){
+				if (shapeSelected instanceof Rectangle){
+					((Rectangle) shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
+				}
 			}
 		}
 }
