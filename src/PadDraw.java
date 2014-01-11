@@ -67,6 +67,7 @@ public class PadDraw extends JComponent {
     private ArrayList<Shape> shapesDrawn;
 	
 	public PadDraw(){
+		current_color = Color.BLACK;
 		setDoubleBuffered(false);
 		setupAdapters();
 		addListeners();
@@ -212,7 +213,7 @@ public class PadDraw extends JComponent {
 	public void clear(){
 		graphics2D.setPaint(Color.white);
 		graphics2D.fillRect(0, 0, getSize().width, getSize().height);
-		graphics2D.setPaint(Color.black);
+		graphics2D.setPaint(current_color);
 		repaint();
 	}
 
