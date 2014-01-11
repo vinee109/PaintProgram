@@ -165,7 +165,7 @@ public class PaintWindow extends JFrame{
 		JButton clearButton = new JButton("Clear");
 		clearButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				drawPad.clear();
+				drawPad.clearAll();
 			}
 		});
 		panel.add(clearButton);

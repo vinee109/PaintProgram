@@ -235,6 +235,11 @@ public class PadDraw extends JComponent {
 		graphics2D.setStroke(new BasicStroke(thickness));
 	}
 	
+	public void clearAll(){
+		clear();
+		shapesDrawn = new ArrayList<Shape>();
+	}
+	
 	// *******************Rectangle*************************************
 	public void updateDrawableRect(int compWidth, int compHeight){
 		int x = currentRect.x;
