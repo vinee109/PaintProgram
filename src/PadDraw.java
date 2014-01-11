@@ -196,14 +196,10 @@ public class PadDraw extends JComponent {
 		
 		if(option == MOVE){
 			if (shapeSelected != null){
-				g.draw(shapeSelected);
 				//System.out.println(shapesSaved.size());
 				for (int i = 0; i < shapesDrawn.size(); i++){
 					Shape shape = shapesDrawn.get(i);
-					if ( shape != shapeSelected){
-						//System.out.println("draw");
-						g.draw(shape);
-					}
+					g.draw(shape);
 				}
 			}
 		}
@@ -794,7 +790,6 @@ public class PadDraw extends JComponent {
 			for ( int i = 0; i < shapesDrawn.size(); i++ ){
 				System.out.println(shapesDrawn.get(i));
 				graphics2D.draw(shapesDrawn.get(i));
-				repaint();
 			}
 			
 			repaint();
