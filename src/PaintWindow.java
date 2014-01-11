@@ -1,7 +1,11 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Ellipse2D.Double;
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -186,6 +190,11 @@ public class PaintWindow extends JFrame{
 			}
 		});
 		JMenuItem saveMenu = new JMenuItem("Save");
+		saveMenu.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				save();
+			}
+		});
 		JMenuItem saveAsMenu = new JMenuItem("Save As");
 		JMenuItem openMenu = new JMenuItem("Open");
 		JMenuItem exportMenu = new JMenuItem("Export Image");
@@ -201,6 +210,40 @@ public class PaintWindow extends JFrame{
 		fileMenu.add(exportMenu);
 		menuBar.add(fileMenu);
 		setJMenuBar(menuBar);
+	}
+	
+	public void save(){
+		JFileChooser fc = new JFileChooser();
+		int val = fc.showSaveDialog(new JFrame());
+		if ( val == JFileChooser.APPROVE_OPTION){
+			String filePath = fc.getSelectedFile().getAbsolutePath();
+			convertShapesList(new File(filePath));
+			
+		}
+	}
+	
+	public void convertShapesList(File file){
+		FileWriter out;
+		try{
+			out = new FileWriter(file);
+			for ( Shape shape : drawPad.getSavedShapes()){
+				if ( shape instanceof Ellipse2D.Double){
+					out.write("Ellipse2D.Double\r\n");
+					double x = ((Ellipse2D.Double)shape).getX();
+					double y = ((Ellipse2D.Double)shape).getY();
+					double width = ((Ellipse2D.Double)shape).getWidth();
+					double height = ((Ellipse2D.Double)shape).getHeight();
+					out.write("x: " + x + "\r\n");
+					out.write("y: " + y + "\r\n");
+					out.write("width: " + width + "\r\n");
+					out.write("height: " + height + "\r\n");
+					out.close();
+				}
+			}
+		}
+		catch(Exception e){
+			
+		}
 	}
 	
 	public void export(){

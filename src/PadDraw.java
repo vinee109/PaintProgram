@@ -120,6 +120,10 @@ public class PadDraw extends JComponent {
 		return image;
 	}
 	
+	public ArrayList<Shape> getSavedShapes(){
+		return shapesDrawn;
+	}
+	
 	public void setOption(int value){
 		System.out.println("Set option to " + value);
 		option = value;
