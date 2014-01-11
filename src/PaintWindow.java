@@ -179,7 +179,9 @@ public class PaintWindow extends JFrame{
 	public void addMenuBar(){
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
+		JMenuItem newMenu = new JMenuItem("New");
 		JMenuItem saveMenu = new JMenuItem("Save");
+		JMenuItem saveAsMenu = new JMenuItem("Save As");
 		JMenuItem openMenu = new JMenuItem("Open");
 		JMenuItem exportMenu = new JMenuItem("Export Image");
 		exportMenu.addActionListener(new ActionListener(){
@@ -187,8 +189,10 @@ public class PaintWindow extends JFrame{
 				export();
 			}
 		});
-		fileMenu.add(saveMenu);
+		fileMenu.add(newMenu);
 		fileMenu.add(openMenu);
+		fileMenu.add(saveMenu);
+		fileMenu.add(saveAsMenu);
 		fileMenu.add(exportMenu);
 		menuBar.add(fileMenu);
 		setJMenuBar(menuBar);
@@ -201,7 +205,6 @@ public class PaintWindow extends JFrame{
 		int val = fc.showSaveDialog(new JFrame());
 		if ( val == JFileChooser.APPROVE_OPTION){
 			String name = fc.getSelectedFile().getAbsolutePath();
-			
 			try{
 				Image image = drawPad.exportImage();
 				File outputFile = new File(name + ".png");
