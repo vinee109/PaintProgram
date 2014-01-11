@@ -180,6 +180,11 @@ public class PaintWindow extends JFrame{
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
 		JMenuItem newMenu = new JMenuItem("New");
+		newMenu.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				drawPad.newOp();
+			}
+		});
 		JMenuItem saveMenu = new JMenuItem("Save");
 		JMenuItem saveAsMenu = new JMenuItem("Save As");
 		JMenuItem openMenu = new JMenuItem("Open");

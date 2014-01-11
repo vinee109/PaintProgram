@@ -13,6 +13,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -26,6 +27,8 @@ public class PadDraw extends JComponent {
 	Graphics2D graphics2D;		//does the drawing
 	int currentX, currentY, oldX, oldY;		// mouse coordinates
 	private int thickness;
+	
+	File currentSaveFile;
 
 	private int option = -1;
 	public final static int LINE = 0;
@@ -109,6 +112,10 @@ public class PadDraw extends JComponent {
 		}
 	}
 	
+	public void newOp(){
+		clearAll();
+	}
+	
 	public Image exportImage(){
 		return image;
 	}
@@ -134,23 +141,6 @@ public class PadDraw extends JComponent {
 		moveAdapter = new MoveListener();
 	}
 	
-	// method to draw a rectangle using two points on the diagnoal
-	public void drawRect(int p1x, int p1y, int p2x, int p2y){
-		System.out.println("(p1x, p1y) = " + "(" + p1x + ", " + p1y + ")");
-		System.out.println("(p2x, p2y) = " + "(" + p2y + ", " + p2y + ")");
-		if (p1x > p2x || p1y > p2y ){
-			graphics2D.draw(new Rectangle(p2x, p2y, 
-					Math.abs(p1x - p2x), 
-					Math.abs(p1y - p2y)));
-			repaint();
-		}
-		else{
-			graphics2D.draw(new Rectangle(p1x, p1y, 
-					Math.abs(p1x - p2x), 
-					Math.abs(p1y - p2y)));
-			repaint();
-		}
-	}
 	//this is the painting bit
 	//if it has nothing on it then
 	//it creates an image the size of the window
@@ -213,10 +203,6 @@ public class PadDraw extends JComponent {
 		}
 	}
 
-	//this is the clear
-	//it sets the colors as white
-	//then it fills the window with white
-	//thin it sets the color back to black
 	public void clear(){
 		graphics2D.setPaint(Color.white);
 		graphics2D.fillRect(0, 0, getSize().width, getSize().height);
