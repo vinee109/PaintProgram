@@ -774,7 +774,7 @@ public class PadDraw extends JComponent {
 			System.out.println("mouse dragged");
 			int x = e.getX();
 			int y = e.getY();
-			if (x < getWidth() && y < getHeight() && shapeSelected.contains(x, y))
+			if (x < getWidth() && y < getHeight())
 				updateLocation(e);
 			clear();
 		}
@@ -798,6 +798,17 @@ public class PadDraw extends JComponent {
 		public void updateLocation(MouseEvent e){
 			if (shapeSelected instanceof Rectangle){
 				((Rectangle) shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
+			}
+			if (shapeSelected instanceof Ellipse2D){
+				((Ellipse2D.Double) shapeSelected).x = preX + e.getX();
+				((Ellipse2D.Double) shapeSelected).y = preY + e.getY();
+			}
+			if (shapeSelected instanceof Arc2D){
+				((Arc2D.Double) shapeSelected).x = preX + e.getX();
+				((Arc2D.Double) shapeSelected).y = preY + e.getY();
+			}
+			if (shapeSelected instanceof Line2D.Double){
+				//((Line2D.Double) shapeSelected).
 			}
 		}
 	}
