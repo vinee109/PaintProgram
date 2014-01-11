@@ -1,9 +1,14 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.RenderedImage;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class PaintWindow extends JFrame{
 	private JPanel panel;
@@ -173,12 +178,38 @@ public class PaintWindow extends JFrame{
 	
 	public void addMenuBar(){
 		JMenuBar menuBar = new JMenuBar();
-		JMenu saveMenu = new JMenu("Save");
-		JMenu openMenu = new JMenu("Open");
-		JMenu exportMenu = new JMenu("Export Image");
-		menuBar.add(saveMenu);
-		menuBar.add(openMenu);
-		menuBar.add(exportMenu);
+		JMenu fileMenu = new JMenu("File");
+		JMenuItem saveMenu = new JMenuItem("Save");
+		JMenuItem openMenu = new JMenuItem("Open");
+		JMenuItem exportMenu = new JMenuItem("Export Image");
+		exportMenu.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				export();
+			}
+		});
+		fileMenu.add(saveMenu);
+		fileMenu.add(openMenu);
+		fileMenu.add(exportMenu);
+		menuBar.add(fileMenu);
 		setJMenuBar(menuBar);
+	}
+	
+	public void export(){
+		JFileChooser fc = new JFileChooser();
+		fc.setAcceptAllFileFilterUsed(false);
+		fc.setFileFilter(new FileNameExtensionFilter("Picture Format (.png)", "png"));
+		int val = fc.showSaveDialog(new JFrame());
+		if ( val == JFileChooser.APPROVE_OPTION){
+			String name = fc.getSelectedFile().getAbsolutePath();
+			
+			try{
+				Image image = drawPad.exportImage();
+				File outputFile = new File(name + ".png");
+				ImageIO.write((RenderedImage) image, "png", outputFile);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+		}
 	}
 }

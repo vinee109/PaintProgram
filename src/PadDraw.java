@@ -12,9 +12,12 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.event.MouseInputAdapter;
 
 
@@ -104,6 +107,10 @@ public class PadDraw extends JComponent {
 				break;
 			
 		}
+	}
+	
+	public Image exportImage(){
+		return image;
 	}
 	
 	public void setOption(int value){
