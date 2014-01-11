@@ -175,8 +175,10 @@ public class PaintWindow extends JFrame{
 		JMenuBar menuBar = new JMenuBar();
 		JMenu saveMenu = new JMenu("Save");
 		JMenu openMenu = new JMenu("Open");
+		JMenu exportMenu = new JMenu("Export Image");
 		menuBar.add(saveMenu);
 		menuBar.add(openMenu);
+		menuBar.add(exportMenu);
 		setJMenuBar(menuBar);
 	}
 }
