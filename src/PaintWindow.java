@@ -22,11 +22,13 @@ public class PaintWindow extends JFrame{
 	private JSlider thicknessSlider;
 	private JTextField thicknessText;
 	private JColorChooser colorChooser;
+	private JFileChooser fc;
 	
 	public PaintWindow(){
 		setTitle("Paint it");
 		setSize(1100, 700);
-
+		
+		fc = new JFileChooser();
 		panel = new JPanel();
 		drawPad = new PadDraw();
 		bottomPanel = new JPanel();
@@ -197,6 +199,12 @@ public class PaintWindow extends JFrame{
 		});
 		JMenuItem saveAsMenu = new JMenuItem("Save As");
 		JMenuItem openMenu = new JMenuItem("Open");
+		openMenu.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				
+				drawPad.openPreviousFile(null);
+			}
+		});
 		JMenuItem exportMenu = new JMenuItem("Export Image");
 		exportMenu.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
@@ -213,13 +221,31 @@ public class PaintWindow extends JFrame{
 	}
 	
 	public void save(){
-		JFileChooser fc = new JFileChooser();
 		int val = fc.showSaveDialog(new JFrame());
 		if ( val == JFileChooser.APPROVE_OPTION){
 			String filePath = fc.getSelectedFile().getAbsolutePath();
 			convertShapesList(new File(filePath));
 			
 		}
+	}
+	
+	// displays JFileChooser returns the file selected by the user
+	public File open(){
+		int val = fc.showOpenDialog(new JFrame());
+		if( val == JFileChooser.APPROVE_OPTION){
+			File file = fc.getSelectedFile();
+			//if the file is null it displays an error dialog
+			if (file == null){
+				JOptionPane.showMessageDialog(new JFrame(),
+					    "An error occurred, the file you selected could not be located.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+			}
+			else{
+				drawPad.openPreviousFile(file);
+			}
+		}
+		return null;
 	}
 	
 	public void convertShapesList(File file){
@@ -247,7 +273,6 @@ public class PaintWindow extends JFrame{
 	}
 	
 	public void export(){
-		JFileChooser fc = new JFileChooser();
 		fc.setAcceptAllFileFilterUsed(false);
 		fc.setFileFilter(new FileNameExtensionFilter("Picture Format (.png)", "png"));
 		int val = fc.showSaveDialog(new JFrame());

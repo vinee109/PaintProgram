@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.event.MouseInputAdapter;
 
 
@@ -232,6 +233,33 @@ public class PadDraw extends JComponent {
 	public void clearAll(){
 		clear();
 		shapesDrawn = new ArrayList<Shape>();
+	}
+	
+	//checks if user has drawn stuff
+	public boolean openChecking(File f){
+		if ( shapesDrawn.size() > 0 ){
+			Object[] options = {"No","Yes"};
+			// 1 represents Yes, 0 represents No
+			int selection = JOptionPane.showOptionDialog(new JFrame(),
+				"Your canvas currently contains some drawings. Would you like to continue with open?"
+						+ " Any unsaved progress will be lost.",
+				"Warning",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE,
+				null,     
+				options,  
+				options[0]); 
+			if ( selection == 1 )
+				return true;
+			else
+				return false;
+		}
+		return true;
+	}
+	public void openPreviousFile(File file){
+		if ( openChecking(file) ){
+			
+		}
 	}
 	
 	// *******************Rectangle*************************************
