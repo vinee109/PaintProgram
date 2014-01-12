@@ -73,6 +73,8 @@ public class PadDraw extends JComponent {
     
     private Color current_color;
     private ArrayList<Shape> shapesDrawn;
+    private ArrayList<Color> colorForShape;
+    private ArrayList<Integer> thicknessForShape;
 	
 	public PadDraw(){
 		current_color = Color.BLACK;
@@ -80,6 +82,8 @@ public class PadDraw extends JComponent {
 		setupAdapters();
 		addListeners();
 		shapesDrawn = new ArrayList<Shape>();
+		colorForShape = new ArrayList<Color>();
+		thicknessForShape = new ArrayList<Integer>();
 	}
 	
 	public void addListeners(){
@@ -124,6 +128,14 @@ public class PadDraw extends JComponent {
 	
 	public ArrayList<Shape> getSavedShapes(){
 		return shapesDrawn;
+	}
+	
+	public ArrayList<Color> getColorForShape(){
+		return colorForShape;
+	}
+	
+	public ArrayList<Integer> getThicknessForShape(){
+		return thicknessForShape;
 	}
 	
 	public void setOption(int value){
@@ -234,6 +246,8 @@ public class PadDraw extends JComponent {
 	public void clearAll(){
 		clear();
 		shapesDrawn = new ArrayList<Shape>();
+		colorForShape = new ArrayList<Color>();
+		thicknessForShape = new ArrayList<Integer>();
 	}
 	
 	//checks if user has drawn stuff
@@ -267,26 +281,49 @@ public class PadDraw extends JComponent {
 				while ( reader.hasNextLine() ){
 					String type_str = reader.nextLine();
 					int type = Integer.parseInt(type_str);
-					double [] values = parseValues(reader);
-					switch(type){
-						case PaintWindow.ELLIPSE2D_DOUBLE_CONST:
-							Ellipse2D.Double circle = new Ellipse2D.Double(values[0], 
-									values[1], values[2], values[3]);
-							shapesDrawn.add(circle);
-							graphics2D.draw(circle);
-							break;
-							
-						case PaintWindow.RECTANGLE_CONST:
-							Rectangle rect = new Rectangle((int)values[0], (int)values[1],
-									(int)values[2], (int)values[3]);
-							shapesDrawn.add(rect);
-							graphics2D.draw(rect);
-							break;
-						case PaintWindow.LINE2D_DOUBLE_CONST:
-							break;
-							
+					if ( type == PaintWindow.ELLIPSE2D_DOUBLE_CONST){
+						double [] values = parseValues(reader, 6); // 4  shape parameters + color and thickness
+						Ellipse2D.Double circle = new Ellipse2D.Double(values[0], 
+								values[1], values[2], values[3]);
+						Color c = new Color((int)values[4]);
+						int thick = (int)values[5];
+						shapesDrawn.add(circle);
+						colorForShape.add(c);
+						thicknessForShape.add(thick);
+						graphics2D.setStroke(new BasicStroke(thick));
+						graphics2D.setPaint(c);
+						graphics2D.draw(circle);
+					}	
+					else if (type == PaintWindow.RECTANGLE_CONST ){
+						double [] values = parseValues(reader, 6);
+						Rectangle rect = new Rectangle((int)values[0], (int)values[1],
+								(int)values[2], (int)values[3]);
+						Color c = new Color((int)values[4]);
+						int thick = (int)values[5];
+						shapesDrawn.add(rect);
+						colorForShape.add(c);
+						thicknessForShape.add(thick);
+						graphics2D.setStroke(new BasicStroke(thick));
+						graphics2D.setPaint(c);
+						graphics2D.draw(rect);
 					}
+					else if (type == PaintWindow.LINE2D_DOUBLE_CONST){
+						double [] values = parseValues(reader, 6);
+						Line2D.Double line = new Line2D.Double( values[0], 
+								values[1], values[2], values[3] );
+						Color c = new Color((int)values[4]);
+						int thick = (int)values[5];
+						shapesDrawn.add(line);
+						colorForShape.add(c);
+						thicknessForShape.add(thick);
+						graphics2D.setStroke(new BasicStroke(thick));
+						graphics2D.setPaint(c);
+						graphics2D.draw(line);
+					}
+							
 				}
+				graphics2D.setStroke(new BasicStroke(1));
+				graphics2D.setPaint(Color.BLACK);
 				repaint();
 			}
 			catch(Exception e){
@@ -295,13 +332,11 @@ public class PadDraw extends JComponent {
 		}
 	}
 	
-	public double [] parseValues(Scanner input){
-		double [] ret = {
-				Double.parseDouble(input.nextLine()),
-				Double.parseDouble(input.nextLine()),
-				Double.parseDouble(input.nextLine()),
-				Double.parseDouble(input.nextLine()),
-		};
+	public double [] parseValues(Scanner input, int num){
+		double [] ret = new double[num]; 
+		for ( int i = 0; i < num; i++){
+			ret[i] = Double.parseDouble(input.nextLine());
+		}
 		return ret;
 	}
 	// *******************Rectangle*************************************
@@ -368,6 +403,8 @@ public class PadDraw extends JComponent {
     			graphics2D.drawRect(rectToDraw.x, rectToDraw.y, 
                         rectToDraw.width - 1, rectToDraw.height - 1);
     			shapesDrawn.add(new Rectangle(rectToDraw));
+    			colorForShape.add(current_color);
+    			thicknessForShape.add(thickness);
     		}
             mousePressed(e);
         }
@@ -475,6 +512,8 @@ public class PadDraw extends JComponent {
 						(int)lineToDraw.getX2(), (int)lineToDraw.getY2());
 				shapesDrawn.add(new Line2D.Double((int)lineToDraw.getX1(), (int)lineToDraw.getY1(),
 						(int)lineToDraw.getX2(), (int)lineToDraw.getY2()));
+				colorForShape.add(current_color);
+				thicknessForShape.add(thickness);
 			}
 			mousePressed(e);
 		}
@@ -591,6 +630,8 @@ public class PadDraw extends JComponent {
                         circToDraw.getWidth(), circToDraw.getHeight()));
     			shapesDrawn.add(new Ellipse2D.Double(circToDraw.getX(), circToDraw.getY(), 
                         circToDraw.getWidth(), circToDraw.getHeight()));
+    			colorForShape.add(current_color);
+    			thicknessForShape.add(thickness);
     			repaint();
     			
     		}
@@ -779,6 +820,8 @@ public class PadDraw extends JComponent {
     			graphics2D.draw(arc);
     			repaint();
     			shapesDrawn.add(arc);
+    			colorForShape.add(current_color);
+    			thicknessForShape.add(thickness);
     		}
             mousePressed(e);
 		}

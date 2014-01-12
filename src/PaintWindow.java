@@ -257,7 +257,13 @@ public class PaintWindow extends JFrame{
 		FileWriter out;
 		try{
 			out = new FileWriter(file);
-			for ( Shape shape : drawPad.getSavedShapes()){
+			ArrayList<Shape> shapes = drawPad.getSavedShapes();
+			ArrayList<Color> colors = drawPad.getColorForShape();
+			ArrayList<Integer> thicks = drawPad.getThicknessForShape();
+			for ( int i = 0; i < shapes.size(); i++ ){
+				Shape shape = shapes.get(i);
+				Color color = colors.get(i);
+				int thickness = thicks.get(i);
 				if ( shape instanceof Ellipse2D.Double){
 					out.write(ELLIPSE2D_DOUBLE_CONST + "\r\n");
 					double [] args = {
@@ -266,7 +272,7 @@ public class PaintWindow extends JFrame{
 						((Ellipse2D.Double)shape).getWidth(),
 						((Ellipse2D.Double)shape).getHeight(),
 					};
-					writeToFile(out, args);
+					writeToFile(out, args, color, thickness);
 				}
 				else if ( shape instanceof Rectangle){
 					out.write(RECTANGLE_CONST + "\r\n");
@@ -276,7 +282,7 @@ public class PaintWindow extends JFrame{
 						((Rectangle)shape).getWidth(),
 						((Rectangle)shape).getHeight(),
 					};
-					writeToFile(out, args);
+					writeToFile(out, args, color, thickness);
 				}
 				else if ( shape instanceof Line2D.Double){
 					out.write(LINE2D_DOUBLE_CONST + "\r\n");
@@ -286,7 +292,7 @@ public class PaintWindow extends JFrame{
 						((Line2D.Double)shape).getX2(),
 						((Line2D.Double)shape).getY2(),
 					};
-					writeToFile(out,args);
+					writeToFile(out,args, color, thickness);
 					
 				}
 			}
@@ -297,13 +303,15 @@ public class PaintWindow extends JFrame{
 		}
 	}
 	
-	public void writeToFile(FileWriter writer, double [] args ){
-		for ( int i = 0; i < args.length; i++){
-			try {
+	public void writeToFile(FileWriter writer, double [] args, Color c, int thickness ){
+		try {
+			for ( int i = 0; i < args.length; i++){
 				writer.write(args[i] + "\r\n");
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+			writer.write(c.getRGB() + "\r\n");
+			writer.write(thickness + "\r\n");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
