@@ -280,11 +280,15 @@ public class PadDraw extends JComponent {
 				reader = new Scanner(file);
 				while ( reader.hasNextLine() ){
 					String type_str = reader.nextLine();
+					System.out.println(type_str);
 					int type = Integer.parseInt(type_str);
 					if ( type == PaintWindow.ELLIPSE2D_DOUBLE_CONST){
 						double [] values = parseValues(reader, 6); // 4  shape parameters + color and thickness
-						Ellipse2D.Double circle = new Ellipse2D.Double(values[0], 
-								values[1], values[2], values[3]);
+						Ellipse2D.Double circle = new Ellipse2D.Double(
+								values[0], 
+								values[1], 
+								values[2], 
+								values[3]);
 						Color c = new Color((int)values[4]);
 						int thick = (int)values[5];
 						shapesDrawn.add(circle);
@@ -296,8 +300,11 @@ public class PadDraw extends JComponent {
 					}	
 					else if (type == PaintWindow.RECTANGLE_CONST ){
 						double [] values = parseValues(reader, 6);
-						Rectangle rect = new Rectangle((int)values[0], (int)values[1],
-								(int)values[2], (int)values[3]);
+						Rectangle rect = new Rectangle(
+								(int)values[0], 
+								(int)values[1],
+								(int)values[2], 
+								(int)values[3]);
 						Color c = new Color((int)values[4]);
 						int thick = (int)values[5];
 						shapesDrawn.add(rect);
@@ -309,8 +316,11 @@ public class PadDraw extends JComponent {
 					}
 					else if (type == PaintWindow.LINE2D_DOUBLE_CONST){
 						double [] values = parseValues(reader, 6);
-						Line2D.Double line = new Line2D.Double( values[0], 
-								values[1], values[2], values[3] );
+						Line2D.Double line = new Line2D.Double( 
+								values[0], 
+								values[1], 
+								values[2], 
+								values[3] );
 						Color c = new Color((int)values[4]);
 						int thick = (int)values[5];
 						shapesDrawn.add(line);
@@ -319,6 +329,26 @@ public class PadDraw extends JComponent {
 						graphics2D.setStroke(new BasicStroke(thick));
 						graphics2D.setPaint(c);
 						graphics2D.draw(line);
+					}
+					else if (type == PaintWindow.ARC2D_DOUBLE_CONST){
+						double [] values = parseValues(reader, 9);
+						Arc2D.Double arc = new Arc2D.Double(
+								values[0],
+								values[1],
+								values[2],
+								values[3],
+								values[4],
+								values[5],
+								(int)values[6]);
+						Color c = new Color((int)values[7]);
+						int thick = (int)values[8];
+						shapesDrawn.add(arc);
+						colorForShape.add(c);
+						thicknessForShape.add(thick);
+						graphics2D.setStroke(new BasicStroke(thick));
+						graphics2D.setPaint(c);
+						graphics2D.draw(arc);
+						
 					}
 							
 				}

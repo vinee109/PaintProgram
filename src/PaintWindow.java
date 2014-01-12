@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Ellipse2D.Double;
 import java.awt.geom.Line2D;
@@ -29,6 +30,7 @@ public class PaintWindow extends JFrame{
 	public final static int ELLIPSE2D_DOUBLE_CONST = 0;
 	public final static int RECTANGLE_CONST = 1;
 	public final static int LINE2D_DOUBLE_CONST = 2;
+	public final static int ARC2D_DOUBLE_CONST = 3;
 	
 	public PaintWindow(){
 		setTitle("Paint it");
@@ -293,7 +295,19 @@ public class PaintWindow extends JFrame{
 						((Line2D.Double)shape).getY2(),
 					};
 					writeToFile(out,args, color, thickness);
-					
+				}
+				else if ( shape instanceof Arc2D.Double){
+					out.write(ARC2D_DOUBLE_CONST + "\r\n");
+					double [] args = {
+						((Arc2D.Double)shape).getX(),
+						((Arc2D.Double)shape).getY(),
+						((Arc2D.Double)shape).getWidth(),
+						((Arc2D.Double)shape).getHeight(),
+						((Arc2D.Double)shape).getAngleStart(),
+						((Arc2D.Double)shape).getAngleExtent(),
+						((Arc2D.Double)shape).getArcType(),
+					};
+					writeToFile(out, args, color, thickness);
 				}
 			}
 			out.close();
