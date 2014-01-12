@@ -2,9 +2,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Ellipse2D.Double;
+import java.awt.geom.Line2D;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -23,6 +25,10 @@ public class PaintWindow extends JFrame{
 	private JTextField thicknessText;
 	private JColorChooser colorChooser;
 	private JFileChooser fc;
+	
+	public final static int ELLIPSE2D_DOUBLE_CONST = 0;
+	public final static int RECTANGLE_CONST = 1;
+	public final static int LINE2D_DOUBLE_CONST = 2;
 	
 	public PaintWindow(){
 		setTitle("Paint it");
@@ -201,8 +207,7 @@ public class PaintWindow extends JFrame{
 		JMenuItem openMenu = new JMenuItem("Open");
 		openMenu.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				
-				drawPad.openPreviousFile(null);
+				open();
 			}
 		});
 		JMenuItem exportMenu = new JMenuItem("Export Image");
@@ -254,21 +259,51 @@ public class PaintWindow extends JFrame{
 			out = new FileWriter(file);
 			for ( Shape shape : drawPad.getSavedShapes()){
 				if ( shape instanceof Ellipse2D.Double){
-					out.write("Ellipse2D.Double\r\n");
-					double x = ((Ellipse2D.Double)shape).getX();
-					double y = ((Ellipse2D.Double)shape).getY();
-					double width = ((Ellipse2D.Double)shape).getWidth();
-					double height = ((Ellipse2D.Double)shape).getHeight();
-					out.write("x: " + x + "\r\n");
-					out.write("y: " + y + "\r\n");
-					out.write("width: " + width + "\r\n");
-					out.write("height: " + height + "\r\n");
-					out.close();
+					out.write(ELLIPSE2D_DOUBLE_CONST + "\r\n");
+					double [] args = {
+						((Ellipse2D.Double)shape).getX(),
+						((Ellipse2D.Double)shape).getY(),
+						((Ellipse2D.Double)shape).getWidth(),
+						((Ellipse2D.Double)shape).getHeight(),
+					};
+					writeToFile(out, args);
+				}
+				else if ( shape instanceof Rectangle){
+					out.write(RECTANGLE_CONST + "\r\n");
+					double [] args = {
+						((Rectangle)shape).getX(),
+						((Rectangle)shape).getY(),
+						((Rectangle)shape).getWidth(),
+						((Rectangle)shape).getHeight(),
+					};
+					writeToFile(out, args);
+				}
+				else if ( shape instanceof Line2D.Double){
+					out.write(LINE2D_DOUBLE_CONST + "\r\n");
+					double [] args = {
+						((Line2D.Double)shape).getX1(),
+						((Line2D.Double)shape).getY1(),
+						((Line2D.Double)shape).getX2(),
+						((Line2D.Double)shape).getY2(),
+					};
+					writeToFile(out,args);
+					
 				}
 			}
+			out.close();
 		}
 		catch(Exception e){
-			
+			e.printStackTrace();
+		}
+	}
+	
+	public void writeToFile(FileWriter writer, double [] args ){
+		for ( int i = 0; i < args.length; i++){
+			try {
+				writer.write(args[i] + "\r\n");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

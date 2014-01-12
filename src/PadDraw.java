@@ -15,6 +15,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -249,19 +250,60 @@ public class PadDraw extends JComponent {
 				null,     
 				options,  
 				options[0]); 
-			if ( selection == 1 )
+			if ( selection == 1 ){
+				clearAll();
 				return true;
+			}
 			else
 				return false;
 		}
 		return true;
 	}
 	public void openPreviousFile(File file){
+		Scanner reader;
 		if ( openChecking(file) ){
-			
+			try{
+				reader = new Scanner(file);
+				while ( reader.hasNextLine() ){
+					String type_str = reader.nextLine();
+					int type = Integer.parseInt(type_str);
+					double [] values = parseValues(reader);
+					switch(type){
+						case PaintWindow.ELLIPSE2D_DOUBLE_CONST:
+							Ellipse2D.Double circle = new Ellipse2D.Double(values[0], 
+									values[1], values[2], values[3]);
+							shapesDrawn.add(circle);
+							graphics2D.draw(circle);
+							break;
+							
+						case PaintWindow.RECTANGLE_CONST:
+							Rectangle rect = new Rectangle((int)values[0], (int)values[1],
+									(int)values[2], (int)values[3]);
+							shapesDrawn.add(rect);
+							graphics2D.draw(rect);
+							break;
+						case PaintWindow.LINE2D_DOUBLE_CONST:
+							break;
+							
+					}
+				}
+				repaint();
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 	}
 	
+	public double [] parseValues(Scanner input){
+		double [] ret = {
+				Double.parseDouble(input.nextLine()),
+				Double.parseDouble(input.nextLine()),
+				Double.parseDouble(input.nextLine()),
+				Double.parseDouble(input.nextLine()),
+		};
+		return ret;
+	}
 	// *******************Rectangle*************************************
 	public void updateDrawableRect(int compWidth, int compHeight){
 		int x = currentRect.x;
