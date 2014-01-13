@@ -55,9 +55,9 @@ public class PadDraw extends JComponent {
     MyRectangle previousRectDrawn = new MyRectangle();
     
     //for drawing straight lines
-    Line2D currentLine = null;
-    Line2D lineToDraw = null;
-    Line2D previousLineDrawn = new Line2D.Double();
+    Line currentLine = null;
+    Line lineToDraw = null;
+    Line previousLineDrawn = new Line();
     
     //for drawing circles
     Ellipse2D currentCirc = null;
@@ -243,6 +243,10 @@ public class PadDraw extends JComponent {
 		graphics2D.setStroke(new BasicStroke(thickness));
 	}
 	
+	public int getThickness(){
+		return thickness;
+	}
+	
 	public void clearAll(){
 		clear();
 		shapesDrawn = new ArrayList<Shape>();
@@ -317,16 +321,17 @@ public class PadDraw extends JComponent {
 					}
 					else if (type == PaintWindow.LINE2D_DOUBLE_CONST){
 						double [] values = parseValues(reader, 6);
-						Line2D.Double line = new Line2D.Double( 
+						Color c = new Color((int)values[4]);
+						int thick = (int)values[5];
+						Line line = new Line( 
 								values[0], 
 								values[1], 
 								values[2], 
-								values[3] );
-						Color c = new Color((int)values[4]);
-						int thick = (int)values[5];
+								values[3],
+								c,
+								thick);
+						
 						shapesDrawn.add(line);
-						colorForShape.add(c);
-						thicknessForShape.add(thick);
 						graphics2D.setStroke(new BasicStroke(thick));
 						graphics2D.setPaint(c);
 						graphics2D.draw(line);
@@ -476,6 +481,7 @@ public class PadDraw extends JComponent {
 	
 			graphics2D.drawLine(oldX, oldY, currentX, currentY);
 			repaint();
+			shapesDrawn.add(new Line(oldX, oldY, currentX, currentY, current_color, thickness));
 	
 			oldX = currentX;
 			oldY = currentY;
@@ -520,14 +526,14 @@ public class PadDraw extends JComponent {
 			previousLineDrawn.setLine(lineToDraw);
 			lineToDraw.setLine(x1, y1, x2 , y2);
 		}else
-			lineToDraw = new Line2D.Double(x1, y1, x2, y2);
+			lineToDraw = new Line(x1, y1, x2, y2);
 	}
 	
 	private class StraightLineListener extends MouseInputAdapter{
 		public void mousePressed(MouseEvent e){
 			int x = e.getX();
 			int y = e.getY();
-			currentLine = new Line2D.Double(x,y,x,y);
+			currentLine = new Line(x,y,x,y);
 			updateDrawableStraightLine(getWidth(), getHeight());
             repaint();
 		}
@@ -541,10 +547,10 @@ public class PadDraw extends JComponent {
 			if (currentLine != null){
 				graphics2D.drawLine((int)lineToDraw.getX1(), (int)lineToDraw.getY1(),
 						(int)lineToDraw.getX2(), (int)lineToDraw.getY2());
-				shapesDrawn.add(new Line2D.Double((int)lineToDraw.getX1(), (int)lineToDraw.getY1(),
-						(int)lineToDraw.getX2(), (int)lineToDraw.getY2()));
-				colorForShape.add(current_color);
-				thicknessForShape.add(thickness);
+				shapesDrawn.add(new Line((int)lineToDraw.getX1(), (int)lineToDraw.getY1(),
+						(int)lineToDraw.getX2(), (int)lineToDraw.getY2(), current_color, thickness));
+				//colorForShape.add(current_color);
+				//thicknessForShape.add(thickness);
 			}
 			mousePressed(e);
 		}

@@ -284,7 +284,6 @@ public class PaintWindow extends JFrame{
 					writeToFile(out, args, color, thickness);
 				}
 				else if ( shape instanceof MyRectangle){
-					System.out.println("in method");
 					out.write(RECTANGLE_CONST + "\r\n");
 					double [] args = {
 						((MyRectangle)shape).getX(),
@@ -302,7 +301,7 @@ public class PaintWindow extends JFrame{
 						((Line2D.Double)shape).getX2(),
 						((Line2D.Double)shape).getY2(),
 					};
-					writeToFile(out,args, color, thickness);
+					writeToFile(out,args, ((Line)shape).getColor(), ((Line)shape).getThickness());
 				}
 				else if ( shape instanceof Arc2D.Double){
 					out.write(ARC2D_DOUBLE_CONST + "\r\n");
