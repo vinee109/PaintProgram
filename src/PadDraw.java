@@ -65,16 +65,14 @@ public class PadDraw extends JComponent {
     Circle previousCircDrawn = new Circle();
     
     //for drawing arcs
-    Arc2D currentArc = null;
-    Arc2D arcToDraw = null;
-    Arc2D previousArcDrawn = new Arc2D.Double();
+    Arc currentArc = null;
+    Arc arcToDraw = null;
+    Arc previousArcDrawn = new Arc();
     
     private Shape shapeSelected;
     
     private Color current_color;
     private ArrayList<Shape> shapesDrawn;
-    private ArrayList<Color> colorForShape;
-    private ArrayList<Integer> thicknessForShape;
 	
 	public PadDraw(){
 		current_color = Color.BLACK;
@@ -82,8 +80,6 @@ public class PadDraw extends JComponent {
 		setupAdapters();
 		addListeners();
 		shapesDrawn = new ArrayList<Shape>();
-		colorForShape = new ArrayList<Color>();
-		thicknessForShape = new ArrayList<Integer>();
 	}
 	
 	public void addListeners(){
@@ -128,14 +124,6 @@ public class PadDraw extends JComponent {
 	
 	public ArrayList<Shape> getSavedShapes(){
 		return shapesDrawn;
-	}
-	
-	public ArrayList<Color> getColorForShape(){
-		return colorForShape;
-	}
-	
-	public ArrayList<Integer> getThicknessForShape(){
-		return thicknessForShape;
 	}
 	
 	public void setOption(int value){
@@ -250,8 +238,6 @@ public class PadDraw extends JComponent {
 	public void clearAll(){
 		clear();
 		shapesDrawn = new ArrayList<Shape>();
-		colorForShape = new ArrayList<Color>();
-		thicknessForShape = new ArrayList<Integer>();
 	}
 	
 	//checks if user has drawn stuff
@@ -297,13 +283,14 @@ public class PadDraw extends JComponent {
 								c,
 								thick);
 						shapesDrawn.add(circle);
-						graphics2D.setStroke(new BasicStroke(thick));
 						graphics2D.setPaint(c);
+						graphics2D.setStroke(new BasicStroke(thick));
 						graphics2D.draw(circle);
 					}	
 					else if (type == PaintWindow.RECTANGLE_CONST ){
 						double [] values = parseValues(reader, 6);
 						Color c = new Color((int)values[4]);
+						System.out.println(c);
 						int thick = (int)values[5];
 						MyRectangle rect = new MyRectangle(
 								(int)values[0], 
@@ -338,19 +325,20 @@ public class PadDraw extends JComponent {
 					}
 					else if (type == PaintWindow.ARC2D_DOUBLE_CONST){
 						double [] values = parseValues(reader, 9);
-						Arc2D.Double arc = new Arc2D.Double(
+						Color c = new Color((int)values[7]);
+						System.out.println(c);
+						int thick = (int)values[8];
+						Arc arc = new Arc(
 								values[0],
 								values[1],
 								values[2],
 								values[3],
 								values[4],
 								values[5],
-								(int)values[6]);
-						Color c = new Color((int)values[7]);
-						int thick = (int)values[8];
+								(int)values[6],
+								c,
+								thick);
 						shapesDrawn.add(arc);
-						colorForShape.add(c);
-						thicknessForShape.add(thick);
 						graphics2D.setStroke(new BasicStroke(thick));
 						graphics2D.setPaint(c);
 						graphics2D.draw(arc);
@@ -816,7 +804,7 @@ public class PadDraw extends JComponent {
                         arcToDraw.getArcType());
             arcToDraw.setArc(x, y, width, height, startAngle, extentAngle, type);
         } else {
-            arcToDraw = new Arc2D.Double(x, y, width, height, startAngle, extentAngle, type);
+            arcToDraw = new Arc(x, y, width, height, startAngle, extentAngle, type);
         }
 	}
 	
@@ -831,7 +819,7 @@ public class PadDraw extends JComponent {
 			initialY = y;
 			System.out.println("x = " + x);
 			System.out.println("y = " + y);
-			currentArc = new Arc2D.Double(x, y, 0, 0, 0, 0, Arc2D.OPEN);
+			currentArc = new Arc(x, y, 0, 0, 0, 0, Arc2D.OPEN);
 			System.out.println("arc x = " + currentArc.getX());
 			System.out.println("arc y = " + currentArc.getY() + "\n" );
 			updateDrawableArc(getWidth(), getHeight());
@@ -845,18 +833,18 @@ public class PadDraw extends JComponent {
 		public void mouseReleased(MouseEvent e){
 			updateSize(e);
 			if(currentArc!= null){
-				Arc2D arc = new Arc2D.Double(arcToDraw.getX(),
+				Arc arc = new Arc(arcToDraw.getX(),
 						arcToDraw.getY(),
 						arcToDraw.getWidth(),
 						arcToDraw.getHeight(),
 						arcToDraw.getAngleStart(),
 						arcToDraw.getAngleExtent(),
-						arcToDraw.getArcType());
+						arcToDraw.getArcType(),
+						current_color,
+						thickness);
     			graphics2D.draw(arc);
     			repaint();
     			shapesDrawn.add(arc);
-    			colorForShape.add(current_color);
-    			thicknessForShape.add(thickness);
     		}
             mousePressed(e);
 		}

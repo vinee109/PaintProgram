@@ -260,19 +260,9 @@ public class PaintWindow extends JFrame{
 		try{
 			out = new FileWriter(file);
 			ArrayList<Shape> shapes = drawPad.getSavedShapes();
-			ArrayList<Color> colors = drawPad.getColorForShape();
-			ArrayList<Integer> thicks = drawPad.getThicknessForShape();
 			for ( int i = 0; i < shapes.size(); i++ ){
 				
 				Shape shape = shapes.get(i);
-				/*
-				Color color = colors.get(i);
-				int thickness = thicks.get(i);
-				*/
-
-				Color color = null;
-				int thickness = -1;
-				
 				if ( shape instanceof Circle){
 					out.write(CIRCLE_CONST + "\r\n");
 					double [] args = {
@@ -306,15 +296,15 @@ public class PaintWindow extends JFrame{
 				else if ( shape instanceof Arc2D.Double){
 					out.write(ARC2D_DOUBLE_CONST + "\r\n");
 					double [] args = {
-						((Arc2D.Double)shape).getX(),
-						((Arc2D.Double)shape).getY(),
-						((Arc2D.Double)shape).getWidth(),
-						((Arc2D.Double)shape).getHeight(),
-						((Arc2D.Double)shape).getAngleStart(),
-						((Arc2D.Double)shape).getAngleExtent(),
-						((Arc2D.Double)shape).getArcType(),
+						((Arc)shape).getX(),
+						((Arc)shape).getY(),
+						((Arc)shape).getWidth(),
+						((Arc)shape).getHeight(),
+						((Arc)shape).getAngleStart(),
+						((Arc)shape).getAngleExtent(),
+						((Arc)shape).getArcType(),
 					};
-					writeToFile(out, args, color, thickness);
+					writeToFile(out, args, ((Arc)shape).getColor(), ((Arc)shape).getThickness());
 				}
 			}
 			out.close();
