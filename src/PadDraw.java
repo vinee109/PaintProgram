@@ -50,9 +50,9 @@ public class PadDraw extends JComponent {
 	MouseInputAdapter current = null;
 	
 	//for drawing rectangles
-	Rectangle currentRect = null;
-    Rectangle rectToDraw = null;
-    Rectangle previousRectDrawn = new Rectangle();
+	MyRectangle currentRect = null;
+    MyRectangle rectToDraw = null;
+    MyRectangle previousRectDrawn = new MyRectangle();
     
     //for drawing straight lines
     Line2D currentLine = null;
@@ -280,7 +280,6 @@ public class PadDraw extends JComponent {
 				reader = new Scanner(file);
 				while ( reader.hasNextLine() ){
 					String type_str = reader.nextLine();
-					System.out.println(type_str);
 					int type = Integer.parseInt(type_str);
 					if ( type == PaintWindow.ELLIPSE2D_DOUBLE_CONST){
 						double [] values = parseValues(reader, 6); // 4  shape parameters + color and thickness
@@ -300,16 +299,18 @@ public class PadDraw extends JComponent {
 					}	
 					else if (type == PaintWindow.RECTANGLE_CONST ){
 						double [] values = parseValues(reader, 6);
-						Rectangle rect = new Rectangle(
+						Color c = new Color((int)values[4]);
+						int thick = (int)values[5];
+						MyRectangle rect = new MyRectangle(
 								(int)values[0], 
 								(int)values[1],
 								(int)values[2], 
-								(int)values[3]);
-						Color c = new Color((int)values[4]);
-						int thick = (int)values[5];
+								(int)values[3],
+								c,
+								thick);
 						shapesDrawn.add(rect);
-						colorForShape.add(c);
-						thicknessForShape.add(thick);
+						//colorForShape.add(c);
+						//thicknessForShape.add(thick);
 						graphics2D.setStroke(new BasicStroke(thick));
 						graphics2D.setPaint(c);
 						graphics2D.draw(rect);
@@ -409,7 +410,7 @@ public class PadDraw extends JComponent {
                         rectToDraw.width, rectToDraw.height);
             rectToDraw.setBounds(x, y, width, height);
         } else {
-            rectToDraw = new Rectangle(x, y, width, height);
+            rectToDraw = new MyRectangle(x, y, width, height);
         }
     }
 	
@@ -417,7 +418,7 @@ public class PadDraw extends JComponent {
 		public void mousePressed(MouseEvent e) {
             int x = e.getX();
             int y = e.getY();
-            currentRect = new Rectangle(x, y, 0, 0);
+            currentRect = new MyRectangle(x, y, 0, 0);
             updateDrawableRect(getWidth(), getHeight());
             repaint();
         }
@@ -432,9 +433,9 @@ public class PadDraw extends JComponent {
             if(currentRect!= null){
     			graphics2D.drawRect(rectToDraw.x, rectToDraw.y, 
                         rectToDraw.width - 1, rectToDraw.height - 1);
-    			shapesDrawn.add(new Rectangle(rectToDraw));
-    			colorForShape.add(current_color);
-    			thicknessForShape.add(thickness);
+    			shapesDrawn.add(new MyRectangle(rectToDraw, current_color, thickness));
+    			//colorForShape.add(current_color);
+    			//thicknessForShape.add(thickness);
     		}
             mousePressed(e);
         }

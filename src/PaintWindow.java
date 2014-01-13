@@ -263,9 +263,16 @@ public class PaintWindow extends JFrame{
 			ArrayList<Color> colors = drawPad.getColorForShape();
 			ArrayList<Integer> thicks = drawPad.getThicknessForShape();
 			for ( int i = 0; i < shapes.size(); i++ ){
+				
 				Shape shape = shapes.get(i);
+				/*
 				Color color = colors.get(i);
 				int thickness = thicks.get(i);
+				*/
+
+				Color color = null;
+				int thickness = -1;
+				
 				if ( shape instanceof Ellipse2D.Double){
 					out.write(ELLIPSE2D_DOUBLE_CONST + "\r\n");
 					double [] args = {
@@ -276,15 +283,16 @@ public class PaintWindow extends JFrame{
 					};
 					writeToFile(out, args, color, thickness);
 				}
-				else if ( shape instanceof Rectangle){
+				else if ( shape instanceof MyRectangle){
+					System.out.println("in method");
 					out.write(RECTANGLE_CONST + "\r\n");
 					double [] args = {
-						((Rectangle)shape).getX(),
-						((Rectangle)shape).getY(),
-						((Rectangle)shape).getWidth(),
-						((Rectangle)shape).getHeight(),
+						((MyRectangle)shape).getX(),
+						((MyRectangle)shape).getY(),
+						((MyRectangle)shape).getWidth(),
+						((MyRectangle)shape).getHeight(),
 					};
-					writeToFile(out, args, color, thickness);
+					writeToFile(out, args, ((MyRectangle)shape).getColor(), ((MyRectangle)shape).getThickness());
 				}
 				else if ( shape instanceof Line2D.Double){
 					out.write(LINE2D_DOUBLE_CONST + "\r\n");
