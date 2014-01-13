@@ -12,6 +12,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -247,6 +248,18 @@ public class PadDraw extends JComponent {
 	public void drawResizeRects(){
 		for (Shape shape: shapesDrawn){
 			if( shape instanceof MyRectangle){
+				Point topLeft = ((MyRectangle)shape).getLocation();
+				int width = ((MyRectangle)shape).width;
+				int height = ((MyRectangle)shape).height;
+				Point topRight = new Point(topLeft.x + width, topLeft.y);
+				Point bottomLeft = new Point(topLeft.x, topLeft.y + height);
+				Point bottomRight = new Point(topLeft.x + width, topLeft.y + height);
+				ResizeRect [] args = {
+						new ResizeRect(topLeft), 
+						new ResizeRect(topRight), 
+						new ResizeRect(bottomLeft), 
+						new ResizeRect(bottomRight)};
+				addToResizeRectsAndDraw(args);
 				
 			}
 			else if (shape instanceof Line){
@@ -254,18 +267,42 @@ public class PadDraw extends JComponent {
 				Point2D end = ((Line)shape).getP2();
 				ResizeRect startPt = new ResizeRect(start);
 				ResizeRect endPt = new ResizeRect(end);
-				resizeRects.add(startPt);
-				resizeRects.add(endPt);
 				
-				//draw the two rectangles on the points
-				graphics2D.setPaint(Color.BLACK);
-				graphics2D.draw(startPt);
-				graphics2D.draw(endPt);
-				graphics2D.fill(startPt);
-				graphics2D.fill(endPt);
-				repaint();
-				graphics2D.setPaint(current_color);
+				//draws the rectangles
+				ResizeRect [] args = {startPt, endPt};
+				addToResizeRectsAndDraw(args);
 			}
+			else if ( shape instanceof Circle){
+				Point center = ((Circle)shape).getCenter();
+				int radius = (int)((Circle)shape).getRadius();
+				ResizeRect [] args = {
+						new ResizeRect(new Point(center.x, center.y - radius)),
+						new ResizeRect(new Point(center.x, center.y + radius)),
+						new ResizeRect(new Point(center.x - radius, center.y)),
+						new ResizeRect(new Point(center.x + radius, center.y))};
+				addToResizeRectsAndDraw(args);
+			}
+			else if ( shape instanceof Arc){
+				Point location = new Point((int)((Arc)shape).getBounds().x, (int)((Arc)shape).getBounds().y);
+				int height = (int) ((Arc)shape).height;
+				int width = (int) ((Arc)shape).width;
+				ResizeRect [] args = {
+						new ResizeRect(location),
+						new ResizeRect(new Point(location.x + width/2, location.y + height)),
+						new ResizeRect(new Point(location.x + width, location.y))};
+				addToResizeRectsAndDraw(args);
+			}
+		}
+		repaint();
+		graphics2D.setPaint(current_color);
+	}
+	
+	public void addToResizeRectsAndDraw( ResizeRect [] args ){
+		graphics2D.setPaint(Color.BLACK);
+		for(int i = 0; i < args.length; i++){
+			resizeRects.add(args[i]);
+			graphics2D.draw(args[i]);
+			graphics2D.fill(args[i]);
 		}
 	}
 	
@@ -388,7 +425,7 @@ public class PadDraw extends JComponent {
 	public double [] parseValues(Scanner input, int num){
 		double [] ret = new double[num]; 
 		for ( int i = 0; i < num; i++){
-			ret[i] = Double.parseDouble(input.nextLine());
+			ret[i] = java.lang.Double.parseDouble(input.nextLine());
 		}
 		return ret;
 	}
