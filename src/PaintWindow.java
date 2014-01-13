@@ -161,7 +161,7 @@ public class PaintWindow extends JFrame{
 		panel.add(circButton);
 		
 		//arc button
-		JButton arcButton = new JButton("Arc");
+		JButton arcButton = new JButton(new ImageIcon("arc.gif"));
 		arcButton.setPreferredSize(new Dimension(20,20));
 		arcButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
