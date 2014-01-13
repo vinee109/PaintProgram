@@ -27,7 +27,7 @@ public class PaintWindow extends JFrame{
 	private JColorChooser colorChooser;
 	private JFileChooser fc;
 	
-	public final static int ELLIPSE2D_DOUBLE_CONST = 0;
+	public final static int CIRCLE_CONST = 0;
 	public final static int RECTANGLE_CONST = 1;
 	public final static int LINE2D_DOUBLE_CONST = 2;
 	public final static int ARC2D_DOUBLE_CONST = 3;
@@ -273,15 +273,15 @@ public class PaintWindow extends JFrame{
 				Color color = null;
 				int thickness = -1;
 				
-				if ( shape instanceof Ellipse2D.Double){
-					out.write(ELLIPSE2D_DOUBLE_CONST + "\r\n");
+				if ( shape instanceof Circle){
+					out.write(CIRCLE_CONST + "\r\n");
 					double [] args = {
-						((Ellipse2D.Double)shape).getX(),
-						((Ellipse2D.Double)shape).getY(),
-						((Ellipse2D.Double)shape).getWidth(),
-						((Ellipse2D.Double)shape).getHeight(),
+						((Circle)shape).getX(),
+						((Circle)shape).getY(),
+						((Circle)shape).getWidth(),
+						((Circle)shape).getHeight(),
 					};
-					writeToFile(out, args, color, thickness);
+					writeToFile(out, args, ((Circle)shape).getColor(), ((Circle)shape).getThickness());
 				}
 				else if ( shape instanceof MyRectangle){
 					out.write(RECTANGLE_CONST + "\r\n");

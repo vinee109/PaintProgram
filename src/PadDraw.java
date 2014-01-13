@@ -60,9 +60,9 @@ public class PadDraw extends JComponent {
     Line previousLineDrawn = new Line();
     
     //for drawing circles
-    Ellipse2D currentCirc = null;
-    Ellipse2D circToDraw = null;
-    Ellipse2D previousCircDrawn = new Ellipse2D.Double();
+    Circle currentCirc = null;
+    Circle circToDraw = null;
+    Circle previousCircDrawn = new Circle();
     
     //for drawing arcs
     Arc2D currentArc = null;
@@ -285,18 +285,18 @@ public class PadDraw extends JComponent {
 				while ( reader.hasNextLine() ){
 					String type_str = reader.nextLine();
 					int type = Integer.parseInt(type_str);
-					if ( type == PaintWindow.ELLIPSE2D_DOUBLE_CONST){
+					if ( type == PaintWindow.CIRCLE_CONST){
 						double [] values = parseValues(reader, 6); // 4  shape parameters + color and thickness
-						Ellipse2D.Double circle = new Ellipse2D.Double(
+						Color c = new Color((int)values[4]);
+						int thick = (int)values[5];
+						Circle circle = new Circle(
 								values[0], 
 								values[1], 
 								values[2], 
-								values[3]);
-						Color c = new Color((int)values[4]);
-						int thick = (int)values[5];
+								values[3],
+								c,
+								thick);
 						shapesDrawn.add(circle);
-						colorForShape.add(c);
-						thicknessForShape.add(thick);
 						graphics2D.setStroke(new BasicStroke(thick));
 						graphics2D.setPaint(c);
 						graphics2D.draw(circle);
@@ -619,7 +619,7 @@ public class PadDraw extends JComponent {
                         circToDraw.getWidth(), circToDraw.getHeight());
             circToDraw.setFrame(x, y, width, height);
         } else {
-            circToDraw = new Ellipse2D.Double(x, y, width, height);
+            circToDraw = new Circle(x, y, width, height);
         }
 	}
 	
@@ -628,7 +628,7 @@ public class PadDraw extends JComponent {
 			int x = e.getX();
 			int y = e.getY();
 			System.out.println("(" + x + ", " + y + ")");
-			currentCirc = new Ellipse2D.Double(x, y, 0, 0);
+			currentCirc = new Circle(x, y, 0, 0);
 			
 			/*
 			Ellipse2D.Double circ = new Ellipse2D.Double(x, y, 50, 50);
@@ -663,12 +663,10 @@ public class PadDraw extends JComponent {
 	        */
 			if(currentCirc!= null){
 				//graphics2D.draw(currentCirc);
-    			graphics2D.draw(new Ellipse2D.Double(circToDraw.getX(), circToDraw.getY(), 
-                        circToDraw.getWidth(), circToDraw.getHeight()));
-    			shapesDrawn.add(new Ellipse2D.Double(circToDraw.getX(), circToDraw.getY(), 
-                        circToDraw.getWidth(), circToDraw.getHeight()));
-    			colorForShape.add(current_color);
-    			thicknessForShape.add(thickness);
+				Circle circ = new Circle(circToDraw.getX(), circToDraw.getY(), 
+                        circToDraw.getWidth(), circToDraw.getHeight(), current_color, thickness);
+    			graphics2D.draw(circ);
+    			shapesDrawn.add(circ);
     			repaint();
     			
     		}
