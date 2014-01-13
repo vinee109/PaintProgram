@@ -39,6 +39,7 @@ public class PadDraw extends JComponent {
 	public final static int CIRC = 3;
 	public final static int ARC = 4;
 	public final static int MOVE = 5;
+	public final static int RESIZE = 6;
 	
 	//Mouse listeners for each shape;
 	MouseInputAdapter lineAdapter;
@@ -73,6 +74,7 @@ public class PadDraw extends JComponent {
     
     private Color current_color;
     private ArrayList<Shape> shapesDrawn;
+    private ArrayList<ResizeRect> resizeRects;
 	
 	public PadDraw(){
 		current_color = Color.BLACK;
@@ -80,6 +82,7 @@ public class PadDraw extends JComponent {
 		setupAdapters();
 		addListeners();
 		shapesDrawn = new ArrayList<Shape>();
+		resizeRects = new ArrayList<ResizeRect>();
 	}
 	
 	public void addListeners(){
@@ -238,6 +241,32 @@ public class PadDraw extends JComponent {
 	public void clearAll(){
 		clear();
 		shapesDrawn = new ArrayList<Shape>();
+	}
+	
+	//method that draws all the resize rect buttons on each shape
+	public void drawResizeRects(){
+		for (Shape shape: shapesDrawn){
+			if( shape instanceof MyRectangle){
+				
+			}
+			else if (shape instanceof Line){
+				Point2D start = ((Line)shape).getP1();
+				Point2D end = ((Line)shape).getP2();
+				ResizeRect startPt = new ResizeRect(start);
+				ResizeRect endPt = new ResizeRect(end);
+				resizeRects.add(startPt);
+				resizeRects.add(endPt);
+				
+				//draw the two rectangles on the points
+				graphics2D.setPaint(Color.BLACK);
+				graphics2D.draw(startPt);
+				graphics2D.draw(endPt);
+				graphics2D.fill(startPt);
+				graphics2D.fill(endPt);
+				repaint();
+				graphics2D.setPaint(current_color);
+			}
+		}
 	}
 	
 	//checks if user has drawn stuff

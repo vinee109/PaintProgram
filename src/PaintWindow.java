@@ -180,6 +180,17 @@ public class PaintWindow extends JFrame{
 		});
 		panel.add(moveButton);
 		
+		//resize button
+		JButton resizeButton = new JButton("Resize");
+		resizeButton.setPreferredSize(new Dimension(20,20));
+		resizeButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				drawPad.setOption(PadDraw.RESIZE);
+				drawPad.drawResizeRects();
+			}
+		});
+		panel.add(resizeButton);
+		
 		//creates the clear button
 		JButton clearButton = new JButton("Clear");
 		clearButton.addActionListener(new ActionListener(){
