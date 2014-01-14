@@ -49,14 +49,14 @@ public class PadDraw extends JComponent {
 	public final static int RESIZE = 6;
 	
 	//Mouse listeners for each shape;
-	MouseInputAdapter lineAdapter;
-	MouseInputAdapter rectAdapter;
-	MouseInputAdapter straightLineAdapter;
-	MouseInputAdapter circAdapter;
-	MouseInputAdapter arcAdapter;
-	MouseInputAdapter moveAdapter;
+	PadDrawListener lineAdapter;
+	PadDrawListener rectAdapter;
+	PadDrawListener straightLineAdapter;
+	PadDrawListener circAdapter;
+	PadDrawListener arcAdapter;
+	PadDrawListener moveAdapter;
 	MouseInputAdapter listener;
-	MouseInputAdapter current = null;
+	PadDrawListener current = null;
 	
 	//for drawing rectangles
 	MyRectangle currentRect = null;
@@ -101,6 +101,8 @@ public class PadDraw extends JComponent {
 	
 	public void changeSnapEnabled(){
 		snapEnabled = !snapEnabled;
+		if ( current != null)
+			current.changeSnapEnabled(snapEnabled);
 	}
 	public void addListeners(){
 		removeMouseMotionListener(current);
@@ -527,7 +529,7 @@ public void openPreviousFile(File file){
     		}
             mousePressed(e);
         }
-        
+        /*
         public void mouseMoved(MouseEvent e){
         	if ( snapEnabled){
 	    		getConnects();
@@ -562,7 +564,8 @@ public void openPreviousFile(File file){
 	    		}
         	}
     	}
- 
+        */
+        
         /* 
          * Update the size of the current rectangle
          * and call repaint.  Because currentRect
@@ -599,7 +602,7 @@ public void openPreviousFile(File file){
         }
 	}
 	// ********************* Line ******************************************
-	private class LineListener extends MouseInputAdapter{
+	private class LineListener extends PadDrawListener{
 		public void mousePressed(MouseEvent e){
 			oldX = e.getX();
 			oldY = e.getY();
@@ -659,10 +662,19 @@ public void openPreviousFile(File file){
 			lineToDraw = new Line(x1, y1, x2, y2);
 	}
 	
-	private class StraightLineListener extends MouseInputAdapter{
+	private class StraightLineListener extends PadDrawListener{
 		public void mousePressed(MouseEvent e){
-			int x = e.getX();
-			int y = e.getY();
+			int x, y;
+			setShapes(shapesDrawn);
+			if ( snapEnabled){
+				Point p = snap(e.getX(), e.getY());
+				x = p.x;
+				y = p.y;
+			}
+			else{
+				x = e.getX();
+				y = e.getY();
+			}
 			currentLine = new Line(x,y,x,y);
 			updateDrawableStraightLine(getWidth(), getHeight());
             repaint();
@@ -686,14 +698,59 @@ public void openPreviousFile(File file){
 		}
 		
 		void updateSize(MouseEvent e) {
-            int x = e.getX();
-            int y = e.getY();
+			int x, y;
+        	if (snapEnabled){
+        		Point p = snap(e.getX(), e.getY());
+        		x = p.x;
+        		y = p.y;
+        	}
+        	else{
+        		x = e.getX();
+        		y = e.getY();
+        	}
             currentLine.setLine(currentLine.getP1(), new Point2D.Double(x, y));
             updateDrawableStraightLine(getWidth(), getHeight());
             Rectangle totalRepaint = previousLineDrawn.getBounds().union(lineToDraw.getBounds());
             repaint(totalRepaint.x - thickness, totalRepaint.y - thickness,
                     totalRepaint.width*2 + 2*thickness, totalRepaint.height*2 + 2*thickness);
         }
+		/*
+		public void mouseMoved(MouseEvent e){
+	        setShapes(shapesDrawn);	
+			if ( snapEnabled ){
+	    		getConnects();
+	    		int x = e.getX();
+	    		int y = e.getY();
+	    		Robot robot;
+				
+	    		Point screenLoc = MouseInfo.getPointerInfo().getLocation();
+	    		int xOff = screenLoc.x - x;
+	    		int yOff = screenLoc.y - y;
+	    		//System.out.println("(" + x + ", " + y + ")");
+	    		//System.out.println(connectionPts);
+	    		for (int i = 0; i < connectionPts.size(); i++){
+	    			Connection c = connectionPts.get(i);
+	    			System.out.println(snapped);
+	    			if ( Math.abs(x - c.getX()) < 5 && Math.abs(y - c.getY()) < 5 && !snapped){
+	    				//System.out.println(c);
+	    				//drawAllWhiteBut(i);
+	    				snapped = true;
+	    				try {
+	    					robot = new Robot();
+	    					robot.mouseMove(c.getX() + xOff, c.getY() + yOff);
+	    				} catch (AWTException e1) {
+	    					// TODO Auto-generated catch block
+	    					e1.printStackTrace();
+	    				}
+	    			}
+	    			else if (Math.abs(x - c.getX()) >= 10 || Math.abs(y - c.getY()) >= 10 ){
+	     				snapped = false;
+	     			}
+	    			
+	    		}
+        	}
+    	}
+    	*/
 	}
 	
 	// ***************************** Circle *******************************************
@@ -753,7 +810,7 @@ public void openPreviousFile(File file){
         }
 	}
 	
-	private class CircListener extends MouseInputAdapter{
+	private class CircListener extends PadDrawListener{
 		public void mousePressed(MouseEvent e){
 			int x = e.getX();
 			int y = e.getY();
@@ -950,7 +1007,7 @@ public void openPreviousFile(File file){
         }
 	}
 	
-	private class ArcListener extends MouseInputAdapter{
+	private class ArcListener extends PadDrawListener{
 		private int initialX;
 		private int initialY;
 		
@@ -1020,7 +1077,7 @@ public void openPreviousFile(File file){
 		}
 	}
 	//******************************* Move ********************************************
-	private class MoveListener extends MouseInputAdapter{
+	private class MoveListener extends PadDrawListener{
 		int preX;
 		int preY;
 		

@@ -15,9 +15,14 @@ public class PadDrawListener extends MouseInputAdapter {
 	ArrayList<Shape> shapes;
 	ArrayList<Connection> connectionPts = new ArrayList<Connection>();
 	boolean snapped;
+	boolean snapEnabled = false;
 	
 	public PadDrawListener(){
 		snapped = false;
+	}
+	
+	public void changeSnapEnabled(boolean s){
+		snapEnabled = s;
 	}
 	
 	public void getConnects(){
@@ -31,6 +36,41 @@ public class PadDrawListener extends MouseInputAdapter {
 						connectionPts.add(c);
 					}
 			}
+	}
+	
+	public void mouseMoved(MouseEvent e){
+    	if ( snapEnabled){
+    		getConnects();
+    		int x = e.getX();
+    		int y = e.getY();
+    		Robot robot;
+			
+    		Point screenLoc = MouseInfo.getPointerInfo().getLocation();
+    		int xOff = screenLoc.x - x;
+    		int yOff = screenLoc.y - y;
+    		//System.out.println("(" + x + ", " + y + ")");
+    		//System.out.println(connectionPts);
+    		for (int i = 0; i < connectionPts.size(); i++){
+    			Connection c = connectionPts.get(i);
+    			System.out.println(snapped);
+    			if ( Math.abs(x - c.getX()) < 5 && Math.abs(y - c.getY()) < 5 && !snapped){
+    				//System.out.println(c);
+    				//drawAllWhiteBut(i);
+    				snapped = true;
+    				try {
+    					robot = new Robot();
+    					robot.mouseMove(c.getX() + xOff, c.getY() + yOff);
+    				} catch (AWTException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+    			}
+    			else if (Math.abs(x - c.getX()) >= 10 || Math.abs(y - c.getY()) >= 10 ){
+     				snapped = false;
+     			}
+    			
+    		}
+    	}
 	}
 	/*
 	public void mouseDragged(MouseEvent e){
