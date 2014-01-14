@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.awt.image.BufferedImage;
@@ -49,6 +50,7 @@ public class PadDraw extends JComponent {
 	MouseInputAdapter circAdapter;
 	MouseInputAdapter arcAdapter;
 	MouseInputAdapter moveAdapter;
+	MouseInputAdapter listener;
 	MouseInputAdapter current = null;
 	
 	//for drawing rectangles
@@ -79,11 +81,15 @@ public class PadDraw extends JComponent {
 	
 	public PadDraw(){
 		current_color = Color.BLACK;
+		shapesDrawn = new ArrayList<Shape>();
+		resizeRects = new ArrayList<ResizeRect>();
 		setDoubleBuffered(false);
 		setupAdapters();
 		addListeners();
-		shapesDrawn = new ArrayList<Shape>();
-		resizeRects = new ArrayList<ResizeRect>();
+		//PadDrawListener listener = new PadDrawListener(graphics2D, shapesDrawn);
+		//this.addMouseMotionListener(listener);
+		//addMouseMotionListener(listener);
+		//addMouseListener(listener);
 	}
 	
 	public void addListeners(){
@@ -144,7 +150,7 @@ public class PadDraw extends JComponent {
 	
 	public void setupAdapters(){
 		lineAdapter = new LineListener();
-		rectAdapter = new RectListener();
+		rectAdapter = new RectListener(graphics2D, shapesDrawn);
 		straightLineAdapter = new StraightLineListener();
 		circAdapter = new CircListener();
 		arcAdapter = new ArcListener();
@@ -329,7 +335,8 @@ public class PadDraw extends JComponent {
 		}
 		return true;
 	}
-	public void openPreviousFile(File file){
+	
+public void openPreviousFile(File file){
 		Scanner reader;
 		if ( openChecking(file) ){
 			try{
@@ -473,7 +480,12 @@ public class PadDraw extends JComponent {
         }
     }
 	
-	private class RectListener extends MouseInputAdapter{
+	private class RectListener extends PadDrawListener{
+		public RectListener(Graphics2D g, ArrayList<Shape> s) {
+			super(g, s);
+			// TODO Auto-generated constructor stub
+		}
+
 		public void mousePressed(MouseEvent e) {
             int x = e.getX();
             int y = e.getY();
@@ -498,6 +510,25 @@ public class PadDraw extends JComponent {
     		}
             mousePressed(e);
         }
+        
+        public void mouseMoved(MouseEvent e){
+    		getConnects();
+    		int x = e.getX();
+    		int y = e.getY();
+    		System.out.println("(" + x + ", " + y + ")");
+    		for (Connection c: connectionPts){
+    			if ( Math.abs(x - c.getX()) < 20 && Math.abs(y - c.getY()) < 20 ){
+    				graphics2D.drawOval(c.getX() - 5, c.getY() - 5, 10, 10);
+    				repaint();
+    			}
+    			else{
+    				clear();
+    				for ( Shape s: shapesDrawn){
+    					graphics2D.draw(s);
+    				}
+    			}
+    		}
+    	}
  
         /* 
          * Update the size of the current rectangle
@@ -1012,4 +1043,5 @@ public class PadDraw extends JComponent {
 			}
 		}
 	}
+	
 }
