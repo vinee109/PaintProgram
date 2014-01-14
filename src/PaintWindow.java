@@ -229,11 +229,19 @@ public class PaintWindow extends JFrame{
 				export();
 			}
 		});
+		JMenuItem renderMenu = new JMenuItem("Render3D");
+		renderMenu.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				Render3D render = new Render3D(drawPad.getSavedShapes(), drawPad.getWidth(), drawPad.getHeight());
+				render.display();
+			}
+		});
 		fileMenu.add(newMenu);
 		fileMenu.add(openMenu);
 		fileMenu.add(saveMenu);
 		fileMenu.add(saveAsMenu);
 		fileMenu.add(exportMenu);
+		fileMenu.add(renderMenu);
 		menuBar.add(fileMenu);
 		
 		JMenu drawOptionsMenu = new JMenu("Draw Options");
