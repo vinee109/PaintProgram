@@ -41,15 +41,22 @@ public class Render3D extends MouseAdapter{
 	
 	public void display(){
 	    // create a color cube
-	    Vector3f vector = new Vector3f(-0.3f, 0.0f, 0.0f);
+	    Vector3f vector = new Vector3f(+0.3f, 0.0f, 0.0f);
 
 	    Transform3D transform = new Transform3D();
 
 	    transform.setTranslation(vector);
 
 	    TransformGroup transformGroup = new TransformGroup(transform);
+	    Appearance appearance1 = new Appearance();
 
-	    ColorCube cube = new ColorCube(0.3);
+	    appearance1.setPolygonAttributes(
+
+	       new PolygonAttributes(PolygonAttributes.POLYGON_LINE,
+
+	       PolygonAttributes.CULL_BACK,0.0f));
+	    double x = 0.1;
+	    Box cube = new Box((float)x, 0.2f, 0.3f, appearance1);
 
 	    transformGroup.addChild(cube);
 
