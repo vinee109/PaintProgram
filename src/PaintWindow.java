@@ -123,7 +123,7 @@ public class PaintWindow extends JFrame{
 		
 		addMenuBar();
 		
-		JButton lineButton = new JButton(new ImageIcon("line.gif"));
+		JButton lineButton = new JButton(new ImageIcon("icons/line.gif"));
 		lineButton.setPreferredSize(new Dimension(20,20));
 		lineButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -133,7 +133,7 @@ public class PaintWindow extends JFrame{
 		});
 		panel.add(lineButton);
 		
-		JButton straightLineButton = new JButton(new ImageIcon("straightline.gif"));
+		JButton straightLineButton = new JButton(new ImageIcon("icons/straightline.gif"));
 		straightLineButton.setPreferredSize(new Dimension(20,20));
 		straightLineButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -142,7 +142,7 @@ public class PaintWindow extends JFrame{
 		});
 		panel.add(straightLineButton);
 		
-		JButton rectButton = new JButton(new ImageIcon("rect.gif"));
+		JButton rectButton = new JButton(new ImageIcon("icons/rect.gif"));
 		rectButton.setPreferredSize(new Dimension(20,20));
 		rectButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -151,7 +151,7 @@ public class PaintWindow extends JFrame{
 		});
 		panel.add(rectButton);
 		
-		JButton circButton = new JButton(new ImageIcon("circ.gif"));
+		JButton circButton = new JButton(new ImageIcon("icons/circ.gif"));
 		circButton.setPreferredSize(new Dimension(20,20));
 		circButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -161,7 +161,7 @@ public class PaintWindow extends JFrame{
 		panel.add(circButton);
 		
 		//arc button
-		JButton arcButton = new JButton(new ImageIcon("arc.gif"));
+		JButton arcButton = new JButton(new ImageIcon("icons/arc.gif"));
 		arcButton.setPreferredSize(new Dimension(20,20));
 		arcButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
