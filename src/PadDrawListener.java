@@ -28,10 +28,13 @@ public class PadDrawListener extends MouseInputAdapter {
 	public void getConnects(){
 		if (shapes.size() > 0)
 			for ( Shape s : shapes){
-				//System.out.println(s);
-				//System.out.println(((MyRectangle)s).getConnections());
 				if ( s instanceof MyRectangle)
 					for(Connection c: ((MyRectangle)s).getConnections() ){
+						//System.out.println(c);
+						connectionPts.add(c);
+					}
+				if ( s instanceof Line)
+					for(Connection c: ((Line)s).getConnections() ){
 						//System.out.println(c);
 						connectionPts.add(c);
 					}

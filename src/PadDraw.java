@@ -92,11 +92,6 @@ public class PadDraw extends JComponent {
 		setDoubleBuffered(false);
 		setupAdapters();
 		addListeners();
-		
-		//PadDrawListener listener = new PadDrawListener(graphics2D, shapesDrawn);
-		//this.addMouseMotionListener(listener);
-		//addMouseMotionListener(listener);
-		//addMouseListener(listener);
 	}
 	
 	public void changeSnapEnabled(){
