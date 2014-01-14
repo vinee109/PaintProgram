@@ -1,11 +1,14 @@
+import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Robot;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Arc2D;
@@ -150,7 +153,7 @@ public class PadDraw extends JComponent {
 	
 	public void setupAdapters(){
 		lineAdapter = new LineListener();
-		rectAdapter = new RectListener(graphics2D, shapesDrawn);
+		rectAdapter = new RectListener();
 		straightLineAdapter = new StraightLineListener();
 		circAdapter = new CircListener();
 		arcAdapter = new ArcListener();
@@ -481,20 +484,20 @@ public void openPreviousFile(File file){
     }
 	
 	private class RectListener extends PadDrawListener{
-		public RectListener(Graphics2D g, ArrayList<Shape> s) {
-			super(g, s);
-			// TODO Auto-generated constructor stub
-		}
 
 		public void mousePressed(MouseEvent e) {
-            int x = e.getX();
-            int y = e.getY();
+			setShapes(shapesDrawn);
+			Point p = snap(e.getX(), e.getY());
+            int x = p.x;
+            int y = p.y;
             currentRect = new MyRectangle(x, y, 0, 0);
             updateDrawableRect(getWidth(), getHeight());
             repaint();
+            
         }
  
         public void mouseDragged(MouseEvent e) {
+        	//super.mouseDragged(e);
             updateSize(e);
             
         }
@@ -515,20 +518,49 @@ public void openPreviousFile(File file){
     		getConnects();
     		int x = e.getX();
     		int y = e.getY();
-    		System.out.println("(" + x + ", " + y + ")");
-    		for (Connection c: connectionPts){
-    			if ( Math.abs(x - c.getX()) < 20 && Math.abs(y - c.getY()) < 20 ){
-    				graphics2D.drawOval(c.getX() - 5, c.getY() - 5, 10, 10);
-    				repaint();
-    			}
-    			else{
-    				clear();
-    				for ( Shape s: shapesDrawn){
-    					graphics2D.draw(s);
+    		Robot robot;
+			
+    		Point screenLoc = MouseInfo.getPointerInfo().getLocation();
+    		int xOff = screenLoc.x - x;
+    		int yOff = screenLoc.y - y;
+    		//System.out.println("(" + x + ", " + y + ")");
+    		//System.out.println(connectionPts);
+    		for (int i = 0; i < connectionPts.size(); i++){
+    			Connection c = connectionPts.get(i);
+    			System.out.println(snapped);
+    			if ( Math.abs(x - c.getX()) < 5 && Math.abs(y - c.getY()) < 5 && !snapped){
+    				//System.out.println(c);
+    				//drawAllWhiteBut(i);
+    				snapped = true;
+    				try {
+    					robot = new Robot();
+    					robot.mouseMove(c.getX() + xOff, c.getY() + yOff);
+    				} catch (AWTException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
     				}
     			}
+    			else if (Math.abs(x - c.getX()) >= 10 || Math.abs(y - c.getY()) >= 10 ){
+     				snapped = false;
+     			}
+    			
     		}
     	}
+        
+        public void drawAllWhiteBut(int n){
+        	for ( int i = 0; i < connectionPts.size(); i++){
+        		Connection c = connectionPts.get(i);
+        		if (i == n){
+        			graphics2D.setPaint(Color.BLACK);
+        		}
+        		else{
+        			graphics2D.setPaint(Color.WHITE);
+        		}
+        		graphics2D.drawOval(c.getX() - 5, c.getY() - 5, 10, 10);
+        	}
+        	repaint();
+        	graphics2D.setColor(current_color);
+        }
  
         /* 
          * Update the size of the current rectangle
@@ -543,8 +575,13 @@ public void openPreviousFile(File file){
          * 
          */
         void updateSize(MouseEvent e) {
-            int x = e.getX();
+            /*
+        	int x = e.getX();
             int y = e.getY();
+            */
+            Point p = snap(e.getX(), e.getY());
+            int x = p.x;
+            int y = p.y;
             currentRect.setSize(x - currentRect.x,
                                 y - currentRect.y);
             updateDrawableRect(getWidth(), getHeight());

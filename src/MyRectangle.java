@@ -10,8 +10,7 @@ public class MyRectangle extends Rectangle{
 	
 	public MyRectangle(int x, int y, int width, int height){
 		super(x, y, width, height);
-		connectPts = new Connection[1];
-		connectPts[0] = new Connection(x + width, y + height);
+		setConnections(x, y, width, height);
 	}
 
 	public MyRectangle() {
@@ -20,26 +19,32 @@ public class MyRectangle extends Rectangle{
 
 	public MyRectangle(MyRectangle rect) {
 		super(rect.x, rect.y, rect.width, rect.height);
-		connectPts = new Connection[1];
-		connectPts[0] = new Connection(rect.x + rect.width, rect.y + rect.height);
+		setConnections(rect.x, rect.y, rect.width, rect.height);
 	}
 	
 	public MyRectangle(MyRectangle rect, Color c, int t){
 		super(rect.x, rect.y, rect.width, rect.height);
 		setColor(c);
 		setThickness(t);
-		connectPts = new Connection[1];
-		connectPts[0] = new Connection(rect.x + rect.width/2, rect.y + rect.height/2);
+		setConnections(rect.x, rect.y, rect.width, rect.height);
 	}
 	
 	public MyRectangle(int x, int y, int width, int height, Color c, int thick) {
 		super(x, y, width, height);
 		setColor(c);
 		setThickness(thick);
-		connectPts = new Connection[1];
-		connectPts[0] = new Connection(x + width, y + height);
+		setConnections(x, y, width, height);
 	}
 
+	public void setConnections(int x, int y, int width, int height){
+		connectPts = new Connection[5];
+		connectPts[0] = new Connection(x + width/2, y + height/2);
+		connectPts[1] = new Connection(x, y);
+		connectPts[2] = new Connection(x + width, y);
+		connectPts[3] = new Connection(x, y + height);
+		connectPts[4] = new Connection(x + width, y + height);
+		
+	}
 	public void setColor(Color c){
 		color = c;
 	}
