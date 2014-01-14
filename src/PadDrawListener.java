@@ -29,17 +29,5 @@ public class PadDrawListener extends MouseInputAdapter {
 			}
 	}
 	
-	public void mouseMoved(MouseEvent e){
-		getConnects();
-		int x = e.getX();
-		int y = e.getY();
-		System.out.println("(" + x + ", " + y + ")");
-		for (Connection c: connectionPts){
-			if ( Math.abs(x - c.getX()) < 20 && Math.abs(y - c.getY()) < 20 ){
-				PadDraw.graphics2D.drawOval(c.getX() - 5, c.getY() - 5, 10, 10);
-			}
-		}
-	}
-	
 	
 }
