@@ -36,6 +36,8 @@ public class PadDraw extends JComponent {
 	private int thickness;
 	
 	File currentSaveFile;
+	
+	boolean snapEnabled;
 
 	private int option = -1;
 	public final static int LINE = 0;
@@ -84,17 +86,22 @@ public class PadDraw extends JComponent {
 	
 	public PadDraw(){
 		current_color = Color.BLACK;
+		snapEnabled = false;
 		shapesDrawn = new ArrayList<Shape>();
 		resizeRects = new ArrayList<ResizeRect>();
 		setDoubleBuffered(false);
 		setupAdapters();
 		addListeners();
+		
 		//PadDrawListener listener = new PadDrawListener(graphics2D, shapesDrawn);
 		//this.addMouseMotionListener(listener);
 		//addMouseMotionListener(listener);
 		//addMouseListener(listener);
 	}
 	
+	public void changeSnapEnabled(){
+		snapEnabled = !snapEnabled;
+	}
 	public void addListeners(){
 		removeMouseMotionListener(current);
 		removeMouseListener(current);
@@ -486,10 +493,17 @@ public void openPreviousFile(File file){
 	private class RectListener extends PadDrawListener{
 
 		public void mousePressed(MouseEvent e) {
+			int x, y;
 			setShapes(shapesDrawn);
-			Point p = snap(e.getX(), e.getY());
-            int x = p.x;
-            int y = p.y;
+			if ( snapEnabled){
+				Point p = snap(e.getX(), e.getY());
+				x = p.x;
+				y = p.y;
+			}
+			else{
+				x = e.getX();
+				y = e.getY();
+			}
             currentRect = new MyRectangle(x, y, 0, 0);
             updateDrawableRect(getWidth(), getHeight());
             repaint();
@@ -515,52 +529,39 @@ public void openPreviousFile(File file){
         }
         
         public void mouseMoved(MouseEvent e){
-    		getConnects();
-    		int x = e.getX();
-    		int y = e.getY();
-    		Robot robot;
-			
-    		Point screenLoc = MouseInfo.getPointerInfo().getLocation();
-    		int xOff = screenLoc.x - x;
-    		int yOff = screenLoc.y - y;
-    		//System.out.println("(" + x + ", " + y + ")");
-    		//System.out.println(connectionPts);
-    		for (int i = 0; i < connectionPts.size(); i++){
-    			Connection c = connectionPts.get(i);
-    			System.out.println(snapped);
-    			if ( Math.abs(x - c.getX()) < 5 && Math.abs(y - c.getY()) < 5 && !snapped){
-    				//System.out.println(c);
-    				//drawAllWhiteBut(i);
-    				snapped = true;
-    				try {
-    					robot = new Robot();
-    					robot.mouseMove(c.getX() + xOff, c.getY() + yOff);
-    				} catch (AWTException e1) {
-    					// TODO Auto-generated catch block
-    					e1.printStackTrace();
-    				}
-    			}
-    			else if (Math.abs(x - c.getX()) >= 10 || Math.abs(y - c.getY()) >= 10 ){
-     				snapped = false;
-     			}
-    			
-    		}
-    	}
-        
-        public void drawAllWhiteBut(int n){
-        	for ( int i = 0; i < connectionPts.size(); i++){
-        		Connection c = connectionPts.get(i);
-        		if (i == n){
-        			graphics2D.setPaint(Color.BLACK);
-        		}
-        		else{
-        			graphics2D.setPaint(Color.WHITE);
-        		}
-        		graphics2D.drawOval(c.getX() - 5, c.getY() - 5, 10, 10);
+        	if ( snapEnabled){
+	    		getConnects();
+	    		int x = e.getX();
+	    		int y = e.getY();
+	    		Robot robot;
+				
+	    		Point screenLoc = MouseInfo.getPointerInfo().getLocation();
+	    		int xOff = screenLoc.x - x;
+	    		int yOff = screenLoc.y - y;
+	    		//System.out.println("(" + x + ", " + y + ")");
+	    		//System.out.println(connectionPts);
+	    		for (int i = 0; i < connectionPts.size(); i++){
+	    			Connection c = connectionPts.get(i);
+	    			System.out.println(snapped);
+	    			if ( Math.abs(x - c.getX()) < 5 && Math.abs(y - c.getY()) < 5 && !snapped){
+	    				//System.out.println(c);
+	    				//drawAllWhiteBut(i);
+	    				snapped = true;
+	    				try {
+	    					robot = new Robot();
+	    					robot.mouseMove(c.getX() + xOff, c.getY() + yOff);
+	    				} catch (AWTException e1) {
+	    					// TODO Auto-generated catch block
+	    					e1.printStackTrace();
+	    				}
+	    			}
+	    			else if (Math.abs(x - c.getX()) >= 10 || Math.abs(y - c.getY()) >= 10 ){
+	     				snapped = false;
+	     			}
+	    			
+	    		}
         	}
-        	repaint();
-        	graphics2D.setColor(current_color);
-        }
+    	}
  
         /* 
          * Update the size of the current rectangle
@@ -579,9 +580,16 @@ public void openPreviousFile(File file){
         	int x = e.getX();
             int y = e.getY();
             */
-            Point p = snap(e.getX(), e.getY());
-            int x = p.x;
-            int y = p.y;
+        	int x, y;
+        	if ( snapEnabled){
+        		Point p = snap(e.getX(), e.getY());
+        		x = p.x;
+        		y = p.y;
+        	}
+        	else{
+        		x = e.getX();
+        		y = e.getY();
+        	}
             currentRect.setSize(x - currentRect.x,
                                 y - currentRect.y);
             updateDrawableRect(getWidth(), getHeight());

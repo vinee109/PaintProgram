@@ -235,6 +235,17 @@ public class PaintWindow extends JFrame{
 		fileMenu.add(saveAsMenu);
 		fileMenu.add(exportMenu);
 		menuBar.add(fileMenu);
+		
+		JMenu drawOptionsMenu = new JMenu("Draw Options");
+		JCheckBoxMenuItem snapItem = new JCheckBoxMenuItem("Enable Snap to Shapes");
+		snapItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				drawPad.changeSnapEnabled();
+			}
+		});
+		drawOptionsMenu.add(snapItem);
+		menuBar.add(drawOptionsMenu);
+		
 		setJMenuBar(menuBar);
 	}
 	
