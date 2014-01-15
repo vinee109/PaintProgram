@@ -37,12 +37,16 @@ public class MyRectangle extends Rectangle{
 	}
 
 	public void setConnections(int x, int y, int width, int height){
-		connectPts = new Connection[5];
+		connectPts = new Connection[9];
 		connectPts[0] = new Connection(x + width/2, y + height/2);
 		connectPts[1] = new Connection(x, y);
 		connectPts[2] = new Connection(x + width, y);
 		connectPts[3] = new Connection(x, y + height);
 		connectPts[4] = new Connection(x + width, y + height);
+		connectPts[5] = new Connection(x + width/2, y);
+		connectPts[6] = new Connection(x + width/2, y+height);
+		connectPts[7] = new Connection(x, y+height/2);
+		connectPts[8] = new Connection(x + width, y+height/2);
 		
 	}
 	public void setColor(Color c){

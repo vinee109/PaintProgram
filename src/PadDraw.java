@@ -129,6 +129,8 @@ public class PadDraw extends JComponent {
 				break;
 			
 		}
+		if ( current != null)
+			current.changeSnapEnabled(snapEnabled);
 	}
 	
 	public void newOp(){
@@ -255,6 +257,7 @@ public class PadDraw extends JComponent {
 	public void clearAll(){
 		clear();
 		shapesDrawn = new ArrayList<Shape>();
+		current.clearConnectPts();
 	}
 	
 	//method that draws all the resize rect buttons on each shape
@@ -807,9 +810,18 @@ public void openPreviousFile(File file){
 	
 	private class CircListener extends PadDrawListener{
 		public void mousePressed(MouseEvent e){
-			int x = e.getX();
-			int y = e.getY();
-			System.out.println("(" + x + ", " + y + ")");
+			int x, y;
+			setShapes(shapesDrawn);
+			if ( snapEnabled){
+				Point p = snap(e.getX(), e.getY());
+				x = p.x;
+				y = p.y;
+			}
+			else{
+				x = e.getX();
+				y = e.getY();
+			}
+			//System.out.println("(" + x + ", " + y + ")");
 			currentCirc = new Circle(x, y, 0, 0);
 			
 			/*
@@ -857,8 +869,16 @@ public void openPreviousFile(File file){
 		}
 		
 		public void updateSize(MouseEvent e){
-			int x = e.getX();
-			int y = e.getY();
+			int x, y;
+        	if (snapEnabled){
+        		Point p = snap(e.getX(), e.getY());
+        		x = p.x;
+        		y = p.y;
+        	}
+        	else{
+        		x = e.getX();
+        		y = e.getY();
+        	}
 			double center_x = currentCirc.getCenterX();
 			double center_y = currentCirc.getCenterY();
 			//System.out.println("(" + center_x + ", " + center_y + ")");

@@ -12,7 +12,7 @@ import javax.swing.event.MouseInputAdapter;
 
 public class PadDrawListener extends MouseInputAdapter {
 	Graphics2D graphics;
-	ArrayList<Shape> shapes;
+	ArrayList<Shape> shapes = new ArrayList<Shape>();
 	ArrayList<Connection> connectionPts = new ArrayList<Connection>();
 	boolean snapped;
 	boolean snapEnabled = false;
@@ -42,6 +42,7 @@ public class PadDrawListener extends MouseInputAdapter {
 	}
 	
 	public void mouseMoved(MouseEvent e){
+		System.out.println(snapEnabled);
     	if ( snapEnabled){
     		getConnects();
     		int x = e.getX();
@@ -55,7 +56,7 @@ public class PadDrawListener extends MouseInputAdapter {
     		//System.out.println(connectionPts);
     		for (int i = 0; i < connectionPts.size(); i++){
     			Connection c = connectionPts.get(i);
-    			System.out.println(snapped);
+    			//System.out.println(snapped);
     			if ( Math.abs(x - c.getX()) < 5 && Math.abs(y - c.getY()) < 5 && !snapped){
     				//System.out.println(c);
     				//drawAllWhiteBut(i);
@@ -138,6 +139,10 @@ public class PadDrawListener extends MouseInputAdapter {
 	 
 	public void setShapes(ArrayList<Shape> s){
 		shapes = s;
+	}
+	
+	public void clearConnectPts(){
+		connectionPts = new ArrayList<Connection>();
 	}
 	
 	
