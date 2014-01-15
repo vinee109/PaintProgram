@@ -1031,11 +1031,15 @@ public void openPreviousFile(File file){
 			int y = e.getY();
 			initialX = x;
 			initialY = y;
+			/*
 			System.out.println("x = " + x);
 			System.out.println("y = " + y);
+			*/
 			currentArc = new Arc(x, y, 0, 0, 0, 0, Arc2D.OPEN);
+			/*
 			System.out.println("arc x = " + currentArc.getX());
 			System.out.println("arc y = " + currentArc.getY() + "\n" );
+			*/
 			updateDrawableArc(getWidth(), getHeight());
 			repaint();
 		}

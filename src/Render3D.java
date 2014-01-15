@@ -41,7 +41,7 @@ public class Render3D extends MouseAdapter{
 	
 	public void display(){
 	    // create a color cube
-	    Vector3f vector = new Vector3f(-0.3f, 0.0f, 0.0f);
+	    Vector3f vector = new Vector3f(-1f, -1f, 0.0f);
 
 	    Transform3D transform = new Transform3D();
 
@@ -66,7 +66,7 @@ public class Render3D extends MouseAdapter{
 	    //create a sphere
 
 
-	    Vector3f vector2 = new Vector3f(+0.3f, 0.0f, 0.0f);
+	    Vector3f vector2 = new Vector3f(-1f, 0.5f, 0.0f);
 
 	    Transform3D transform2 = new Transform3D();
 

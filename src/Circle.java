@@ -8,6 +8,7 @@ public class Circle extends Ellipse2D.Double{
 	private int thickness;
 	private Point center;
 	private double radius;
+	private Connection [] connectPts;
 	
 	public Circle(){
 	}
@@ -16,6 +17,7 @@ public class Circle extends Ellipse2D.Double{
 		super(x, y, width, height);
 		center = new Point((int)(x+width/2) , (int)(y+height/2));
 		radius = width/2;
+		setConnections((int)(x+width/2), (int)(y+height/2), (int)(width/2));
 	}
 	
 	public Circle(double x, double y, double width, double height, Color c, int t) {
@@ -24,6 +26,16 @@ public class Circle extends Ellipse2D.Double{
 		thickness = t;
 		center = new Point((int)(x+width/2) , (int)(y+height/2));
 		radius = height/2;
+		setConnections((int)(x+width/2), (int)(y+height/2), (int)(width/2));
+	}
+	
+	public void setConnections(int center_x, int center_y, int radius){
+		connectPts = new Connection[5];
+		connectPts[0] = new Connection(center_x, center_y);
+		connectPts[1] = new Connection(center_x + radius, center_y);
+		connectPts[2] = new Connection(center_x - radius, center_y);
+		connectPts[3] = new Connection(center_x, center_y + radius);
+		connectPts[4] = new Connection(center_x, center_y - radius);
 	}
 	
 	public void setThickness(int t){
@@ -48,5 +60,9 @@ public class Circle extends Ellipse2D.Double{
 	
 	public double getRadius(){
 		return radius;
+	}
+	
+	public Connection[] getConnections(){
+		return connectPts;
 	}
 }

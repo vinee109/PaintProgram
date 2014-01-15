@@ -38,6 +38,11 @@ public class PadDrawListener extends MouseInputAdapter {
 						//System.out.println(c);
 						connectionPts.add(c);
 					}
+				if ( s instanceof Circle)
+					for(Connection c: ((Circle)s).getConnections() ){
+						//System.out.println(c);
+						connectionPts.add(c);
+					}
 			}
 	}
 	
