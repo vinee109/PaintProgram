@@ -1027,8 +1027,17 @@ public void openPreviousFile(File file){
 		private int initialY;
 		
 		public void mousePressed(MouseEvent e){
-			int x = e.getX();
-			int y = e.getY();
+			int x, y;
+			setShapes(shapesDrawn);
+			if ( snapEnabled){
+				Point p = snap(e.getX(), e.getY());
+				x = p.x;
+				y = p.y;
+			}
+			else{
+				x = e.getX();
+				y = e.getY();
+			}
 			initialX = x;
 			initialY = y;
 			/*
@@ -1068,8 +1077,17 @@ public void openPreviousFile(File file){
 		}
 		
 		public void updateSize(MouseEvent e){
-			int x = e.getX();
-            int y = e.getY();
+			int x, y;
+			setShapes(shapesDrawn);
+			if ( snapEnabled){
+				Point p = snap(e.getX(), e.getY());
+				x = p.x;
+				y = p.y;
+			}
+			else{
+				x = e.getX();
+				y = e.getY();
+			}
             /*
             System.out.println("end x = " + x);
             System.out.println("end y = " + y);
