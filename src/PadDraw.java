@@ -80,6 +80,10 @@ public class PadDraw extends JComponent {
     Arc arcToDraw = null;
     Arc previousArcDrawn = new Arc();
     
+    Rectangle currentRectSelect = null;
+    Rectangle rectToDrawSelect = null;
+    Rectangle previousRectDrawnSelect = new Rectangle();
+    
     private Shape shapeSelected;
     
     private Color current_color;
@@ -94,6 +98,9 @@ public class PadDraw extends JComponent {
 		setDoubleBuffered(false);
 		setupAdapters();
 		addListeners();
+	}
+	
+	public void addGroup(){
 	}
 	
 	public void changeSnapEnabled(){
@@ -133,7 +140,9 @@ public class PadDraw extends JComponent {
 				addMouseListener(resizeAdapter);
 				current = resizeAdapter;
 				break;
-			
+			case SELECT: addMouseMotionListener(selectAdapter);
+				addMouseListener(selectAdapter);
+				current = selectAdapter;
 		}
 		if ( current != null)
 			current.changeSnapEnabled(snapEnabled);
@@ -210,13 +219,6 @@ public class PadDraw extends JComponent {
 			if (currentCirc != null){
 				g.drawOval((int)circToDraw.getX(), (int)circToDraw.getY(), 
 						(int)circToDraw.getWidth(), (int)circToDraw.getHeight());
-				/*
-				System.out.println("Paint");
-				System.out.println("x = " + circToDraw.getX());
-				System.out.println("y = " + circToDraw.getY());
-				System.out.println("height = " + circToDraw.getHeight());
-				System.out.println("width = " + circToDraw.getWidth());
-				*/
 			}
 		if( option == ARC){
 			if ( currentArc != null){
@@ -232,6 +234,20 @@ public class PadDraw extends JComponent {
 					Shape shape = shapesDrawn.get(i);
 					g.draw(shape);
 				}
+			}
+		}
+		if(option == SELECT){
+			if(currentRectSelect!= null){
+				final float dash1[] = {10.0f};
+			    final BasicStroke dashed =
+			        new BasicStroke(1.0f,
+			                        BasicStroke.CAP_BUTT,
+			                        BasicStroke.JOIN_MITER,
+			                        10.0f, dash1, 0.0f);
+			    g.setStroke(dashed);
+				g.drawRect(rectToDrawSelect.x, rectToDrawSelect.y, 
+	                    rectToDrawSelect.width - 1, rectToDrawSelect.height - 1);
+				g.setStroke(new BasicStroke(thickness));
 			}
 		}
 	}
@@ -503,7 +519,7 @@ public void openPreviousFile(File file){
 		public void mousePressed(MouseEvent e) {
 			int x, y;
 			setShapes(shapesDrawn);
-			if ( snapEnabled){
+			if (snapEnabled){
 				Point p = snap(e.getX(), e.getY());
 				x = p.x;
 				y = p.y;
@@ -535,62 +551,10 @@ public void openPreviousFile(File file){
     		}
             mousePressed(e);
         }
-        /*
-        public void mouseMoved(MouseEvent e){
-        	if ( snapEnabled){
-	    		getConnects();
-	    		int x = e.getX();
-	    		int y = e.getY();
-	    		Robot robot;
-				
-	    		Point screenLoc = MouseInfo.getPointerInfo().getLocation();
-	    		int xOff = screenLoc.x - x;
-	    		int yOff = screenLoc.y - y;
-	    		//System.out.println("(" + x + ", " + y + ")");
-	    		//System.out.println(connectionPts);
-	    		for (int i = 0; i < connectionPts.size(); i++){
-	    			Connection c = connectionPts.get(i);
-	    			System.out.println(snapped);
-	    			if ( Math.abs(x - c.getX()) < 5 && Math.abs(y - c.getY()) < 5 && !snapped){
-	    				//System.out.println(c);
-	    				//drawAllWhiteBut(i);
-	    				snapped = true;
-	    				try {
-	    					robot = new Robot();
-	    					robot.mouseMove(c.getX() + xOff, c.getY() + yOff);
-	    				} catch (AWTException e1) {
-	    					// TODO Auto-generated catch block
-	    					e1.printStackTrace();
-	    				}
-	    			}
-	    			else if (Math.abs(x - c.getX()) >= 10 || Math.abs(y - c.getY()) >= 10 ){
-	     				snapped = false;
-	     			}
-	    			
-	    		}
-        	}
-    	}
-        */
         
-        /* 
-         * Update the size of the current rectangle
-         * and call repaint.  Because currentRect
-         * always has the same origin, translate it
-         * if the width or height is negative.
-         * 
-         * For efficiency (though
-         * that isn't an issue for this program),
-         * specify the painting region using arguments
-         * to the repaint() call.
-         * 
-         */
         void updateSize(MouseEvent e) {
-            /*
-        	int x = e.getX();
-            int y = e.getY();
-            */
         	int x, y;
-        	if ( snapEnabled){
+        	if (snapEnabled){
         		Point p = snap(e.getX(), e.getY());
         		x = p.x;
         		y = p.y;
@@ -1121,7 +1085,9 @@ public void openPreviousFile(File file){
                     totalRepaint.width + 2*thickness, totalRepaint.height + 2*thickness);
 		}
 	}
+	
 	//******************************* Move ********************************************
+	
 	private class MoveListener extends PadDrawListener{
 		int preX;
 		int preY;
@@ -1190,6 +1156,7 @@ public void openPreviousFile(File file){
 			}
 		}
 	}
+	
 	//******************************* Resize ******************************************
 	private class ResizeListener extends PadDrawListener{
 		
@@ -1222,7 +1189,87 @@ public void openPreviousFile(File file){
 	}
 	
 	//******************************* Selection ***************************************
+	public void updateDrawableRectSelect(int compWidth, int compHeight){
+		int x = currentRectSelect.x;
+        int y = currentRectSelect.y;
+        int width = currentRectSelect.width;
+        int height = currentRectSelect.height;
+ 
+        //Make the width and height positive, if necessary.
+        if (width < 0) {
+            width = 0 - width;
+            x = x - width + 1; 
+            if (x < 0) {
+                width += x; 
+                x = 0;
+            }
+        }
+        if (height < 0) {
+            height = 0 - height;
+            y = y - height + 1; 
+            if (y < 0) {
+                height += y; 
+                y = 0;
+            }
+        }
+ 
+        //The rectangle shouldn't extend past the drawing area.
+        if ((x + width) > compWidth) {
+            width = compWidth - x;
+        }
+        if ((y + height) > compHeight) {
+            height = compHeight - y;
+        }
+       
+        //Update rectToDraw after saving old value.
+        if (rectToDrawSelect != null) {
+            previousRectDrawnSelect.setBounds(
+                        rectToDrawSelect.x, rectToDrawSelect.y, 
+                        rectToDrawSelect.width, rectToDrawSelect.height);
+            rectToDrawSelect.setBounds(x, y, width, height);
+        } else {
+            rectToDrawSelect = new Rectangle(x, y, width, height);
+        }
+    }
+	
 	private class SelectListener extends PadDrawListener{
+		
+		public void mousePressed(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+            currentRectSelect = new Rectangle(x, y, 0, 0);
+            updateDrawableRectSelect(getWidth(), getHeight());
+            repaint();
+            
+        }
+ 
+        public void mouseDragged(MouseEvent e) {
+            updateSize(e);
+            
+        }
+ 
+        public void mouseReleased(MouseEvent e) {
+            updateSize(e);
+            repaint();
+            System.out.println(rectToDrawSelect);
+            System.out.println(currentRectSelect);
+            System.out.println(previousRectDrawnSelect);
+        }
+        
+        public void updateSize(MouseEvent e) {
+        	int x = e.getX();
+        	int y = e.getY();
+            currentRectSelect.setSize(x - currentRectSelect.x,
+                                y - currentRectSelect.y);
+            updateDrawableRectSelect(getWidth(), getHeight());
+            Rectangle totalRepaint = rectToDrawSelect.union(previousRectDrawnSelect);
+            repaint(totalRepaint.x - thickness, totalRepaint.y - thickness,
+                    totalRepaint.width + 2*thickness, totalRepaint.height + 2*thickness);
+        }
+        
+		public void mouseMoved(MouseEvent e){
+			
+		}
 		
 	}
 }

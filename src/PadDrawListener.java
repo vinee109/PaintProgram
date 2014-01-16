@@ -47,7 +47,7 @@ public class PadDrawListener extends MouseInputAdapter {
 	}
 	
 	public void mouseMoved(MouseEvent e){
-		System.out.println(snapEnabled);
+		//System.out.println(snapEnabled);
     	if ( snapEnabled){
     		getConnects();
     		int x = e.getX();

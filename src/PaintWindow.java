@@ -253,7 +253,8 @@ public class PaintWindow extends JFrame{
 		fileMenu.add(renderMenu);
 		menuBar.add(fileMenu);
 		
-		JMenu drawOptionsMenu = new JMenu("Draw Options");
+		JMenu drawOptionsMenu = new JMenu("Edit");
+		
 		JCheckBoxMenuItem snapItem = new JCheckBoxMenuItem("Enable Snap to Shapes");
 		snapItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
@@ -261,6 +262,14 @@ public class PaintWindow extends JFrame{
 			}
 		});
 		drawOptionsMenu.add(snapItem);
+		
+		JMenuItem select = new JMenuItem("Add Group");
+		select.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				drawPad.addGroup();
+			}
+		});
+		drawOptionsMenu.add(select);
 		menuBar.add(drawOptionsMenu);
 		
 		setJMenuBar(menuBar);

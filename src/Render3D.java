@@ -66,7 +66,7 @@ public class Render3D extends MouseAdapter{
 	    //create a sphere
 
 
-	    Vector3f vector2 = new Vector3f(-1f, 0.5f, 0.0f);
+	    Vector3f vector2 = new Vector3f(0.3f, 0.0f, 0.0f);
 
 	    Transform3D transform2 = new Transform3D();
 
