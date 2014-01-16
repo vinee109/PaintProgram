@@ -1,32 +1,24 @@
-import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Robot;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.event.MouseInputAdapter;
 
 
 public class PadDraw extends JComponent {
@@ -101,7 +93,10 @@ public class PadDraw extends JComponent {
 	}
 	
 	public void addGroup(){
-		ArrayList<Shape> shapesSelected = new ArrayList<Shape>();
+		ArrayList<Shape> shapeSelected = getSelectedShapes();
+		Group group = new Group(shapeSelected);
+		graphics2D.draw(group);
+		repaint();
 	}
 	
 	public void changeSnapEnabled(){
@@ -1238,14 +1233,12 @@ public void openPreviousFile(File file){
 	
 	public ArrayList<Shape> getSelectedShapes(){
 		ArrayList<Shape> ret = null;
-		if ( rectToDrawSelect != null){
 			ret = new ArrayList<Shape>();
 			for (Shape shape: shapesDrawn){
 				if (currentRectSelect.contains(shape.getBounds())){
 					ret.add(shape);
 				}
 			}
-		}
 		return ret;
 	}
 	
@@ -1273,7 +1266,7 @@ public void openPreviousFile(File file){
             System.out.println(currentRectSelect);
             System.out.println(previousRectDrawnSelect);
             */
-            System.out.println(getSelectedShapes());
+            //System.out.println(getSelectedShapes());
         }
         
         public void updateSize(MouseEvent e) {
