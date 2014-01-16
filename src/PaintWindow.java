@@ -191,6 +191,15 @@ public class PaintWindow extends JFrame{
 		});
 		panel.add(resizeButton);
 		
+		JButton selectButton = new JButton(new ImageIcon("icons/selection.gif"));
+		selectButton.setPreferredSize(new Dimension(20,20));
+		selectButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				drawPad.setOption(PadDraw.SELECT);
+			}
+		});
+		panel.add(selectButton);
+		
 		//creates the clear button
 		JButton clearButton = new JButton("Clear");
 		clearButton.addActionListener(new ActionListener(){

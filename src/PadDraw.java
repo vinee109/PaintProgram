@@ -47,6 +47,7 @@ public class PadDraw extends JComponent {
 	public final static int ARC = 4;
 	public final static int MOVE = 5;
 	public final static int RESIZE = 6;
+	public final static int SELECT = 7;
 	
 	//Mouse listeners for each shape;
 	PadDrawListener lineAdapter;
@@ -55,7 +56,8 @@ public class PadDraw extends JComponent {
 	PadDrawListener circAdapter;
 	PadDrawListener arcAdapter;
 	PadDrawListener moveAdapter;
-	MouseInputAdapter listener;
+	PadDrawListener selectAdapter;
+	PadDrawListener resizeAdapter;
 	PadDrawListener current = null;
 	
 	//for drawing rectangles
@@ -127,6 +129,10 @@ public class PadDraw extends JComponent {
 				addMouseListener(moveAdapter);
 				current = moveAdapter;
 				break;
+			case RESIZE: addMouseMotionListener(resizeAdapter);
+				addMouseListener(resizeAdapter);
+				current = resizeAdapter;
+				break;
 			
 		}
 		if ( current != null)
@@ -164,6 +170,8 @@ public class PadDraw extends JComponent {
 		circAdapter = new CircListener();
 		arcAdapter = new ArcListener();
 		moveAdapter = new MoveListener();
+		resizeAdapter = new ResizeListener();
+		selectAdapter = new SelectListener();
 	}
 	
 	//this is the painting bit
@@ -271,18 +279,18 @@ public class PadDraw extends JComponent {
 				Point bottomLeft = new Point(topLeft.x, topLeft.y + height);
 				Point bottomRight = new Point(topLeft.x + width, topLeft.y + height);
 				ResizeRect [] args = {
-						new ResizeRect(topLeft), 
-						new ResizeRect(topRight), 
-						new ResizeRect(bottomLeft), 
-						new ResizeRect(bottomRight)};
+						new ResizeRect(topLeft, shape), 
+						new ResizeRect(topRight, shape), 
+						new ResizeRect(bottomLeft, shape), 
+						new ResizeRect(bottomRight, shape)};
 				addToResizeRectsAndDraw(args);
 				
 			}
 			else if (shape instanceof Line){
 				Point2D start = ((Line)shape).getP1();
 				Point2D end = ((Line)shape).getP2();
-				ResizeRect startPt = new ResizeRect(start);
-				ResizeRect endPt = new ResizeRect(end);
+				ResizeRect startPt = new ResizeRect(start, shape);
+				ResizeRect endPt = new ResizeRect(end, shape);
 				
 				//draws the rectangles
 				ResizeRect [] args = {startPt, endPt};
@@ -292,10 +300,10 @@ public class PadDraw extends JComponent {
 				Point center = ((Circle)shape).getCenter();
 				int radius = (int)((Circle)shape).getRadius();
 				ResizeRect [] args = {
-						new ResizeRect(new Point(center.x, center.y - radius)),
-						new ResizeRect(new Point(center.x, center.y + radius)),
-						new ResizeRect(new Point(center.x - radius, center.y)),
-						new ResizeRect(new Point(center.x + radius, center.y))};
+						new ResizeRect(new Point(center.x, center.y - radius), shape),
+						new ResizeRect(new Point(center.x, center.y + radius), shape),
+						new ResizeRect(new Point(center.x - radius, center.y), shape),
+						new ResizeRect(new Point(center.x + radius, center.y), shape)};
 				addToResizeRectsAndDraw(args);
 			}
 			else if ( shape instanceof Arc){
@@ -303,9 +311,9 @@ public class PadDraw extends JComponent {
 				int height = (int) ((Arc)shape).height;
 				int width = (int) ((Arc)shape).width;
 				ResizeRect [] args = {
-						new ResizeRect(location),
-						new ResizeRect(new Point(location.x + width/2, location.y + height)),
-						new ResizeRect(new Point(location.x + width, location.y))};
+						new ResizeRect(location, shape),
+						new ResizeRect(new Point(location.x + width/2, location.y + height), shape),
+						new ResizeRect(new Point(location.x + width, location.y), shape)};
 				addToResizeRectsAndDraw(args);
 			}
 		}
@@ -1182,5 +1190,39 @@ public void openPreviousFile(File file){
 			}
 		}
 	}
+	//******************************* Resize ******************************************
+	private class ResizeListener extends PadDrawListener{
+		
+		public void mousePressed(MouseEvent e){
+			//System.out.println("clicked!");
+			int x = e.getX();
+			int y = e.getY();
+			//System.out.println("(" + x + ", " + y + ")");
+			ResizeRect rectSelected = grabSelectedRect(x, y);
+			//System.out.println(rectSelected);
+			//System.out.println(resizeRects.size());
+			if ( rectSelected != null ){
+				System.out.println(rectSelected.getShape());
+			}
+		}
+		
+		public void mouseMoved(MouseEvent e){
+			
+		}
+		
+		public ResizeRect grabSelectedRect(int x, int y){
+			for (ResizeRect rect: resizeRects){
+				//System.out.println(rect);
+				//System.out.println(rect.isInside(x, y));
+				if ( rect.isInside(x, y))
+					return rect;
+			}
+			return null;
+		}
+	}
 	
+	//******************************* Selection ***************************************
+	private class SelectListener extends PadDrawListener{
+		
+	}
 }
