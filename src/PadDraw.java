@@ -101,6 +101,7 @@ public class PadDraw extends JComponent {
 	}
 	
 	public void addGroup(){
+		ArrayList<Shape> shapesSelected = new ArrayList<Shape>();
 	}
 	
 	public void changeSnapEnabled(){
@@ -161,6 +162,7 @@ public class PadDraw extends JComponent {
 	}
 	
 	public void setOption(int value){
+		repaint();
 		System.out.println("Set option to " + value);
 		option = value;
 		addListeners();
@@ -237,7 +239,7 @@ public class PadDraw extends JComponent {
 			}
 		}
 		if(option == SELECT){
-			if(currentRectSelect!= null){
+			if(rectToDrawSelect!= null){
 				final float dash1[] = {10.0f};
 			    final BasicStroke dashed =
 			        new BasicStroke(1.0f,
@@ -248,6 +250,7 @@ public class PadDraw extends JComponent {
 				g.drawRect(rectToDrawSelect.x, rectToDrawSelect.y, 
 	                    rectToDrawSelect.width - 1, rectToDrawSelect.height - 1);
 				g.setStroke(new BasicStroke(thickness));
+				rectToDrawSelect = null;
 			}
 		}
 	}
@@ -345,6 +348,7 @@ public class PadDraw extends JComponent {
 			graphics2D.fill(args[i]);
 		}
 	}
+	
 	
 	//checks if user has drawn stuff
 	public boolean openChecking(File f){
@@ -1232,6 +1236,19 @@ public void openPreviousFile(File file){
         }
     }
 	
+	public ArrayList<Shape> getSelectedShapes(){
+		ArrayList<Shape> ret = null;
+		if ( rectToDrawSelect != null){
+			ret = new ArrayList<Shape>();
+			for (Shape shape: shapesDrawn){
+				if (currentRectSelect.contains(shape.getBounds())){
+					ret.add(shape);
+				}
+			}
+		}
+		return ret;
+	}
+	
 	private class SelectListener extends PadDrawListener{
 		
 		public void mousePressed(MouseEvent e) {
@@ -1251,9 +1268,12 @@ public void openPreviousFile(File file){
         public void mouseReleased(MouseEvent e) {
             updateSize(e);
             repaint();
+            /*
             System.out.println(rectToDrawSelect);
             System.out.println(currentRectSelect);
             System.out.println(previousRectDrawnSelect);
+            */
+            System.out.println(getSelectedShapes());
         }
         
         public void updateSize(MouseEvent e) {
