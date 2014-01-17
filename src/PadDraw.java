@@ -1108,7 +1108,7 @@ public void openPreviousFile(File file){
 		double lineX2, lineY2;
 		
 		public void mousePressed(MouseEvent e){
-			//System.out.println("mouse pressed");
+			System.out.println("mouse pressed");
 			int x = e.getX();
 			int y = e.getY();
 			initialx = x;
@@ -1123,14 +1123,19 @@ public void openPreviousFile(File file){
 					shapeSelected = shapesDrawn.get(i);
 				i++;
 			}
+			if (shapeSelected instanceof Line){
+				lineX1 = ((Line) shapeSelected).x1;
+				lineY1 = ((Line)shapeSelected).y1;
+				lineX2 = ((Line)shapeSelected).x2;
+				lineY2 = ((Line)shapeSelected).y2;
+				//System.out.println("current");
+				//System.out.println("(" + lineX1 + ", " + lineY1 + ")" + " " + "(" + lineX2 + ", " + lineY2 + ")");
+			}
+			
 			if (shapeSelected != null){
 				preX = shapeSelected.getBounds().x - x;
 				preY = shapeSelected.getBounds().y - y;
 				updateLocation(e);
-			}
-			if (shapeSelected instanceof Line){
-				lineX1 = ((Line) shapeSelected).x1;
-				lineY1 = ((Line)shapeSelected).y1;
 			}
 			System.out.println("selected shape: " + shapeSelected);
 		}
@@ -1175,10 +1180,12 @@ public void openPreviousFile(File file){
 			if (shapeSelected instanceof Line){
 				double distanceX = e.getX() - initialx;
 				double distanceY = e.getY() - initialy;
-				((Line)shapeSelected).x1 += distanceX;
-				((Line)shapeSelected).y1 += distanceY;
-				((Line)shapeSelected).x2 += distanceX;
-				((Line)shapeSelected).y2 += distanceY;
+				((Line)shapeSelected).x1 = lineX1 + distanceX;
+				((Line)shapeSelected).y1 = lineY1 + distanceY;
+				((Line)shapeSelected).x2 = lineX2 + distanceX;
+				((Line)shapeSelected).y2 = lineY2 + distanceY;
+				//System.out.println("released");
+				//System.out.println("(" + lineX1 + ", " + lineY1 + ")" + " " + "(" + lineX2 + ", " + lineY2 + ")");
 				//((Line2D.Double) shapeSelected)
 			}
 			if (shapeSelected instanceof Group){
