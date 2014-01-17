@@ -1,9 +1,11 @@
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
 
 
-public class Group extends Rectangle{
+public class Group extends Rectangle implements BasicShape{
 	
 	private ArrayList<Shape> containedShapes;
 	
@@ -28,6 +30,21 @@ public class Group extends Rectangle{
 			}
 			this.setRect(bounds.x, bounds.y, bounds.width, bounds.height);
 		}
+	}
+	
+	public void draw(Graphics2D g){
+		g.draw(this);
+		for( int i = 0; i < containedShapes.size(); i++){
+			BasicShape shape = (BasicShape)containedShapes.get(i);
+			g.setColor(shape.getColor());
+			g.draw(shape);
+		}
+	}
+
+	@Override
+	public Color getColor() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.geom.Arc2D;
 
 
-public class Arc extends Arc2D.Double {
+public class Arc extends Arc2D.Double implements BasicShape{
 	private Color color;
 	private int thickness;
 	

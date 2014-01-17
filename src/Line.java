@@ -3,7 +3,7 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 
-public class Line extends Line2D.Double{
+public class Line extends Line2D.Double implements BasicShape{
 	private Color color;
 	private int thickness;
 	private Connection [] connectPts;

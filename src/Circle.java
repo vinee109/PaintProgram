@@ -3,7 +3,7 @@ import java.awt.Point;
 import java.awt.geom.Ellipse2D;
 
 
-public class Circle extends Ellipse2D.Double{
+public class Circle extends Ellipse2D.Double implements BasicShape{
 	private Color color;
 	private int thickness;
 	private Point center;

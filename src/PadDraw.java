@@ -94,7 +94,12 @@ public class PadDraw extends JComponent {
 	
 	public void addGroup(){
 		ArrayList<Shape> shapeSelected = getSelectedShapes();
+		System.out.println(shapesDrawn);
+		shapesDrawn.removeAll(shapeSelected);
+		System.out.println(shapesDrawn);
 		Group group = new Group(shapeSelected);
+		shapesDrawn.add(group);
+		System.out.println(shapesDrawn);
 		graphics2D.draw(group);
 		repaint();
 	}
@@ -228,13 +233,20 @@ public class PadDraw extends JComponent {
 			if (shapeSelected != null){
 				//System.out.println(shapesSaved.size());
 				for (int i = 0; i < shapesDrawn.size(); i++){
-					Shape shape = shapesDrawn.get(i);
-					g.draw(shape);
+					BasicShape shape = (BasicShape) shapesDrawn.get(i);
+					if (shape instanceof Group){
+						((Group) shape).draw(g);
+					}
+					else{
+						g.setPaint(shape.getColor());
+						g.draw(shape);
+						g.setPaint(current_color);
+					}
 				}
 			}
 		}
 		if(option == SELECT){
-			if(rectToDrawSelect!= null){
+			if(currentRectSelect!= null){
 				final float dash1[] = {10.0f};
 			    final BasicStroke dashed =
 			        new BasicStroke(1.0f,
@@ -245,7 +257,7 @@ public class PadDraw extends JComponent {
 				g.drawRect(rectToDrawSelect.x, rectToDrawSelect.y, 
 	                    rectToDrawSelect.width - 1, rectToDrawSelect.height - 1);
 				g.setStroke(new BasicStroke(thickness));
-				rectToDrawSelect = null;
+				rectToDrawSelect.setSize(0, 0);
 			}
 		}
 	}
@@ -1090,32 +1102,41 @@ public void openPreviousFile(File file){
 	private class MoveListener extends PadDrawListener{
 		int preX;
 		int preY;
+		int initialx;
+		int initialy;
+		double lineX1, lineY1;
+		double lineX2, lineY2;
 		
 		public void mousePressed(MouseEvent e){
-			System.out.println("mouse pressed");
+			//System.out.println("mouse pressed");
 			int x = e.getX();
 			int y = e.getY();
+			initialx = x;
+			initialy = y;
 			//System.out.println(shapesDrawn);
 			
 			//checks if a shape is selected
 			int i = 0;
-			while ( i < shapesDrawn.size() && !shapesDrawn.get(i).contains(x, y)){
-				if (shapesDrawn.get(i).contains(x, y))
+			while ( i < shapesDrawn.size() ){
+				System.out.println(shapesDrawn.get(i));
+				if (shapesDrawn.get(i).getBounds().contains(x, y))
 					shapeSelected = shapesDrawn.get(i);
 				i++;
 			}
-			
-			shapeSelected = shapesDrawn.get(i);
 			if (shapeSelected != null){
 				preX = shapeSelected.getBounds().x - x;
 				preY = shapeSelected.getBounds().y - y;
 				updateLocation(e);
 			}
+			if (shapeSelected instanceof Line){
+				lineX1 = ((Line) shapeSelected).x1;
+				lineY1 = ((Line)shapeSelected).y1;
+			}
 			System.out.println("selected shape: " + shapeSelected);
 		}
 		
 		public void mouseDragged(MouseEvent e){
-			System.out.println("mouse dragged");
+			//System.out.println("mouse dragged");
 			int x = e.getX();
 			int y = e.getY();
 			if (x < getWidth() && y < getHeight())
@@ -1125,33 +1146,43 @@ public void openPreviousFile(File file){
 		
 		public void mouseReleased(MouseEvent e){
 			System.out.println("mouse released");
-			if ( shapeSelected.contains(e.getPoint()))
+			//if ( shapeSelected.contains(e.getPoint()))
 				updateLocation(e);
 			graphics2D.draw(shapeSelected);
 			
-			System.out.println("size of shapesDrawn = " + shapesDrawn.size() );
+			//System.out.println("size of shapesDrawn = " + shapesDrawn.size() );
 			for ( int i = 0; i < shapesDrawn.size(); i++ ){
 				System.out.println(shapesDrawn.get(i));
 				graphics2D.draw(shapesDrawn.get(i));
 			}
-			
 			repaint();
+			shapeSelected = null;
 		}
 		
 		public void updateLocation(MouseEvent e){
 			if (shapeSelected instanceof Rectangle){
 				((Rectangle) shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
 			}
-			if (shapeSelected instanceof Ellipse2D){
-				((Ellipse2D.Double) shapeSelected).x = preX + e.getX();
-				((Ellipse2D.Double) shapeSelected).y = preY + e.getY();
+			if (shapeSelected instanceof Circle){
+				((Circle) shapeSelected).x = preX + e.getX();
+				((Circle) shapeSelected).y = preY + e.getY();
+				
 			}
-			if (shapeSelected instanceof Arc2D){
+			if (shapeSelected instanceof Arc){
 				((Arc2D.Double) shapeSelected).x = preX + e.getX();
 				((Arc2D.Double) shapeSelected).y = preY + e.getY();
 			}
-			if (shapeSelected instanceof Line2D.Double){
-				//((Line2D.Double) shapeSelected).
+			if (shapeSelected instanceof Line){
+				double distanceX = e.getX() - initialx;
+				double distanceY = e.getY() - initialy;
+				((Line)shapeSelected).x1 += distanceX;
+				((Line)shapeSelected).y1 += distanceY;
+				((Line)shapeSelected).x2 += distanceX;
+				((Line)shapeSelected).y2 += distanceY;
+				//((Line2D.Double) shapeSelected)
+			}
+			if (shapeSelected instanceof Group){
+				((Group)shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
 			}
 		}
 	}
@@ -1260,7 +1291,7 @@ public void openPreviousFile(File file){
  
         public void mouseReleased(MouseEvent e) {
             updateSize(e);
-            repaint();
+            //repaint();
             /*
             System.out.println(rectToDrawSelect);
             System.out.println(currentRectSelect);

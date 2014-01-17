@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 
-public class MyRectangle extends Rectangle{
+public class MyRectangle extends Rectangle implements BasicShape{
 	private Color color;
 	private int thickness;
 	private Connection [] connectPts;
