@@ -1,3 +1,4 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -36,6 +37,7 @@ public class Group extends Rectangle implements BasicShape{
 		g.draw(this);
 		for( int i = 0; i < containedShapes.size(); i++){
 			BasicShape shape = (BasicShape)containedShapes.get(i);
+			g.setStroke(new BasicStroke(shape.getThickness()));
 			g.setColor(shape.getColor());
 			g.draw(shape);
 		}
@@ -45,6 +47,12 @@ public class Group extends Rectangle implements BasicShape{
 	public Color getColor() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public int getThickness() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 }

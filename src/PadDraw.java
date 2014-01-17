@@ -238,12 +238,14 @@ public class PadDraw extends JComponent {
 						((Group) shape).draw(g);
 					}
 					else{
+						g.setStroke(new BasicStroke(shape.getThickness()));
 						g.setPaint(shape.getColor());
 						g.draw(shape);
-						g.setPaint(current_color);
 					}
 				}
 			}
+			g.setStroke(new BasicStroke(thickness));
+			g.setPaint(current_color);
 		}
 		if(option == SELECT){
 			if(currentRectSelect!= null){
@@ -1151,13 +1153,16 @@ public void openPreviousFile(File file){
 		
 		public void mouseReleased(MouseEvent e){
 			System.out.println("mouse released");
-			//if ( shapeSelected.contains(e.getPoint()))
 				updateLocation(e);
+			graphics2D.setColor(((BasicShape) shapeSelected).getColor());
+			graphics2D.setStroke( new BasicStroke(((BasicShape)shapeSelected).getThickness() ));
 			graphics2D.draw(shapeSelected);
 			
 			//System.out.println("size of shapesDrawn = " + shapesDrawn.size() );
 			for ( int i = 0; i < shapesDrawn.size(); i++ ){
-				System.out.println(shapesDrawn.get(i));
+				//System.out.println(shapesDrawn.get(i));
+				graphics2D.setPaint( ((BasicShape)shapesDrawn.get(i)).getColor() );
+				graphics2D.setStroke(new BasicStroke(((BasicShape)shapesDrawn.get(i)).getThickness()));
 				graphics2D.draw(shapesDrawn.get(i));
 			}
 			repaint();
