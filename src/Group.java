@@ -9,6 +9,9 @@ import java.util.ArrayList;
 public class Group extends Rectangle implements BasicShape{
 	
 	private ArrayList<Shape> containedShapes;
+	private final Color color = Color.red;
+	private final int thickness = 1;
+	private final int PAD = 2;
 	
 	public Group(){
 		containedShapes = new ArrayList<Shape>();
@@ -29,7 +32,7 @@ public class Group extends Rectangle implements BasicShape{
 			for ( int i = 1; i < containedShapes.size(); i++){
 				bounds = bounds.union(containedShapes.get(i).getBounds());
 			}
-			this.setRect(bounds.x, bounds.y, bounds.width, bounds.height);
+			this.setRect(bounds.x-PAD, bounds.y-PAD, bounds.width+2*PAD, bounds.height+2*PAD);
 		}
 	}
 	
@@ -45,14 +48,12 @@ public class Group extends Rectangle implements BasicShape{
 
 	@Override
 	public Color getColor() {
-		// TODO Auto-generated method stub
-		return null;
+		return color;
 	}
 
 	@Override
 	public int getThickness() {
-		// TODO Auto-generated method stub
-		return 0;
+		return thickness;
 	}
 	
 }

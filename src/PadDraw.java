@@ -100,10 +100,17 @@ public class PadDraw extends JComponent {
 		Group group = new Group(shapeSelected);
 		shapesDrawn.add(group);
 		System.out.println(shapesDrawn);
+		graphics2D.setPaint(group.getColor());
+		graphics2D.setStroke(new BasicStroke(group.getThickness()));
 		graphics2D.draw(group);
+		resetColorThickness();
 		repaint();
 	}
 	
+	public void resetColorThickness(){
+		graphics2D.setColor(current_color);
+		graphics2D.setStroke(new BasicStroke(thickness));
+	}
 	public void changeSnapEnabled(){
 		snapEnabled = !snapEnabled;
 		if ( current != null)
@@ -235,6 +242,8 @@ public class PadDraw extends JComponent {
 				for (int i = 0; i < shapesDrawn.size(); i++){
 					BasicShape shape = (BasicShape) shapesDrawn.get(i);
 					if (shape instanceof Group){
+						g.setStroke(new BasicStroke(1));
+						g.setPaint(Color.RED);
 						((Group) shape).draw(g);
 					}
 					else{
@@ -256,11 +265,13 @@ public class PadDraw extends JComponent {
 			                        BasicStroke.JOIN_MITER,
 			                        10.0f, dash1, 0.0f);
 			    g.setStroke(dashed);
+			    g.setColor(Color.black);
 				g.drawRect(rectToDrawSelect.x, rectToDrawSelect.y, 
 	                    rectToDrawSelect.width - 1, rectToDrawSelect.height - 1);
 				g.setStroke(new BasicStroke(thickness));
 				rectToDrawSelect.setSize(0, 0);
 			}
+			g.setColor(current_color);
 		}
 	}
 
@@ -1189,9 +1200,6 @@ public void openPreviousFile(File file){
 				((Line)shapeSelected).y1 = lineY1 + distanceY;
 				((Line)shapeSelected).x2 = lineX2 + distanceX;
 				((Line)shapeSelected).y2 = lineY2 + distanceY;
-				//System.out.println("released");
-				//System.out.println("(" + lineX1 + ", " + lineY1 + ")" + " " + "(" + lineX2 + ", " + lineY2 + ")");
-				//((Line2D.Double) shapeSelected)
 			}
 			if (shapeSelected instanceof Group){
 				((Group)shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
@@ -1303,13 +1311,6 @@ public void openPreviousFile(File file){
  
         public void mouseReleased(MouseEvent e) {
             updateSize(e);
-            //repaint();
-            /*
-            System.out.println(rectToDrawSelect);
-            System.out.println(currentRectSelect);
-            System.out.println(previousRectDrawnSelect);
-            */
-            //System.out.println(getSelectedShapes());
         }
         
         public void updateSize(MouseEvent e) {
