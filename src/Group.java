@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 
 
@@ -40,10 +41,31 @@ public class Group extends Rectangle implements BasicShape{
 		g.draw(this);
 		for( int i = 0; i < containedShapes.size(); i++){
 			BasicShape shape = (BasicShape)containedShapes.get(i);
-			g.setStroke(new BasicStroke(shape.getThickness()));
 			g.setColor(shape.getColor());
+			g.setStroke(new BasicStroke(shape.getThickness()));
 			g.draw(shape);
 		}
+	}
+	
+	public void setLocation(int x, int y){
+		for (Shape shape: containedShapes){
+			int offsetX = shape.getBounds().x - this.x;
+			int offsetY = shape.getBounds().y - this.y;
+			
+			if (shape instanceof Rectangle){
+				((Rectangle) shape).setLocation(x + offsetX, y + offsetY);
+			}
+			if (shape instanceof Circle){
+				((Circle) shape).x = x + offsetX;
+				((Circle) shape).y = y + offsetY;
+				
+			}
+			if (shape instanceof Arc){
+				((Arc) shape).x = x + offsetX;
+				((Arc) shape).y = y + offsetY;
+			}
+		}
+		super.setLocation(x, y);
 	}
 
 	@Override

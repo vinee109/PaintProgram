@@ -1172,11 +1172,18 @@ public void openPreviousFile(File file){
 			//System.out.println("size of shapesDrawn = " + shapesDrawn.size() );
 			for ( int i = 0; i < shapesDrawn.size(); i++ ){
 				//System.out.println(shapesDrawn.get(i));
-				graphics2D.setPaint( ((BasicShape)shapesDrawn.get(i)).getColor() );
-				graphics2D.setStroke(new BasicStroke(((BasicShape)shapesDrawn.get(i)).getThickness()));
-				graphics2D.draw(shapesDrawn.get(i));
+				if (shapesDrawn.get(i) instanceof Group){
+					((Group)shapesDrawn.get(i)).draw(graphics2D);
+				}
+				else{
+					graphics2D.setPaint( ((BasicShape)shapesDrawn.get(i)).getColor() );
+					graphics2D.setStroke(new BasicStroke(((BasicShape)shapesDrawn.get(i)).getThickness()));
+					graphics2D.draw(shapesDrawn.get(i));
+				}
 			}
 			repaint();
+			System.out.println(current_color);
+			changeColor(Color.BLACK);
 			shapeSelected = null;
 		}
 		
