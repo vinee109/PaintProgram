@@ -77,15 +77,19 @@ public class Circle extends Ellipse2D.Double implements BasicShape{
 
 	public void changeResizeRect(int pos, int x, int y) {
 		double r = getDistFromCenter(new Point(x, y));
-		points[0].setRect((int)(center.x + r), center.y);
-		points[1].setRect((int)(center.x - r), center.y);
-		points[2].setRect(center.x, (int)(center.y + r));
-		points[3].setRect(center.x, (int)(center.y - r));
+		updatePoints(r);
 		updateCirc();
 	}
 	
 	public double getDistFromCenter(Point p){
 		return Point.distance(center.x, center.y, p.x, p.y);
+	}
+	
+	public void updatePoints(double r){
+		points[0].setRect((int)(center.x + r), center.y);
+		points[1].setRect((int)(center.x - r), center.y);
+		points[2].setRect(center.x, (int)(center.y + r));
+		points[3].setRect(center.x, (int)(center.y - r));
 	}
 	
 	public void updateCirc(){
@@ -99,5 +103,8 @@ public class Circle extends Ellipse2D.Double implements BasicShape{
 	public void setLocation(double xCoord, double yCoord){
 		this.x = xCoord;
 		this.y = yCoord;
+		center = new Point((int)(this.x + radius), (int)(this.y + radius));
+		updatePoints(radius);
+		
 	}
 }
