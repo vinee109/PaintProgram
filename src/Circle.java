@@ -95,4 +95,9 @@ public class Circle extends Ellipse2D.Double implements BasicShape{
 		this.width = radius*2;
 		this.height = radius*2;
 	}
+	
+	public void setLocation(double xCoord, double yCoord){
+		this.x = xCoord;
+		this.y = yCoord;
+	}
 }

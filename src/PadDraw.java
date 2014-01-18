@@ -1228,9 +1228,7 @@ public class PadDraw extends JComponent {
 				((Rectangle) shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
 			}
 			if (shapeSelected instanceof Circle){
-				((Circle) shapeSelected).x = preX + e.getX();
-				((Circle) shapeSelected).y = preY + e.getY();
-				
+				((Circle) shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
 			}
 			if (shapeSelected instanceof Arc){
 				((Arc2D.Double) shapeSelected).x = preX + e.getX();

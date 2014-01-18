@@ -4,7 +4,7 @@ import java.awt.geom.Point2D;
 
 
 public class ResizeRect extends MyRectangle{
-	public final static int SIZE = 8;
+	public final static int SIZE = 10;
 	private int centerX;
 	private int centerY;
 	private Shape shape;
