@@ -78,4 +78,8 @@ public class Group extends Rectangle implements BasicShape{
 		return thickness;
 	}
 	
+	public ArrayList<Shape> getContainedShapes(){
+		return containedShapes;
+	}
+	
 }

@@ -10,6 +10,7 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Ellipse2D.Double;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.File;
@@ -84,6 +85,7 @@ public class PadDraw extends JComponent {
 	
 	public PadDraw(){
 		current_color = Color.BLACK;
+		thickness = 1;
 		snapEnabled = false;
 		shapesDrawn = new ArrayList<Shape>();
 		resizeRects = new ArrayList<ResizeRect>();
@@ -265,12 +267,12 @@ public class PadDraw extends JComponent {
 			                        BasicStroke.JOIN_MITER,
 			                        10.0f, dash1, 0.0f);
 			    g.setStroke(dashed);
-			    g.setColor(Color.black);
+			    g.setColor(Color.BLACK);
 				g.drawRect(rectToDrawSelect.x, rectToDrawSelect.y, 
 	                    rectToDrawSelect.width - 1, rectToDrawSelect.height - 1);
-				g.setStroke(new BasicStroke(thickness));
 				rectToDrawSelect.setSize(0, 0);
 			}
+			g.setStroke(new BasicStroke(thickness));
 			g.setColor(current_color);
 		}
 	}
@@ -1066,6 +1068,7 @@ public void openPreviousFile(File file){
 						current_color,
 						thickness);
     			graphics2D.draw(arc);
+    			graphics2D.draw(arc.getBounds());
     			repaint();
     			shapesDrawn.add(arc);
     		}
@@ -1112,6 +1115,20 @@ public void openPreviousFile(File file){
 	
 	//******************************* Move ********************************************
 	
+	public void drawGroup(Group group){
+		graphics2D.setPaint(group.getColor());
+		graphics2D.setStroke(new BasicStroke(group.getThickness()));
+		graphics2D.draw(group);
+		for (Shape shape: group.getContainedShapes()){
+			graphics2D.setPaint(((BasicShape)shape).getColor());
+			//System.out.println("thickness = " + ((BasicShape)shape).getThickness());
+			graphics2D.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
+			graphics2D.draw(shape);
+		}
+		graphics2D.setPaint(current_color);
+		graphics2D.setStroke(new BasicStroke(thickness));
+	}
+	
 	private class MoveListener extends PadDrawListener{
 		int preX;
 		int preY;
@@ -1131,7 +1148,7 @@ public void openPreviousFile(File file){
 			//checks if a shape is selected
 			int i = 0;
 			while ( i < shapesDrawn.size() ){
-				System.out.println(shapesDrawn.get(i));
+				//System.out.println(shapesDrawn.get(i));
 				if (shapesDrawn.get(i).getBounds().contains(x, y))
 					shapeSelected = shapesDrawn.get(i);
 				i++;
@@ -1150,7 +1167,7 @@ public void openPreviousFile(File file){
 				preY = shapeSelected.getBounds().y - y;
 				updateLocation(e);
 			}
-			System.out.println("selected shape: " + shapeSelected);
+			//System.out.println("selected shape: " + shapeSelected);
 		}
 		
 		public void mouseDragged(MouseEvent e){
@@ -1163,8 +1180,8 @@ public void openPreviousFile(File file){
 		}
 		
 		public void mouseReleased(MouseEvent e){
-			System.out.println("mouse released");
-				updateLocation(e);
+			//System.out.println("mouse released");
+			updateLocation(e);
 			graphics2D.setColor(((BasicShape) shapeSelected).getColor());
 			graphics2D.setStroke( new BasicStroke(((BasicShape)shapeSelected).getThickness() ));
 			graphics2D.draw(shapeSelected);
@@ -1173,7 +1190,8 @@ public void openPreviousFile(File file){
 			for ( int i = 0; i < shapesDrawn.size(); i++ ){
 				//System.out.println(shapesDrawn.get(i));
 				if (shapesDrawn.get(i) instanceof Group){
-					((Group)shapesDrawn.get(i)).draw(graphics2D);
+					drawGroup((Group)shapesDrawn.get(i));
+					
 				}
 				else{
 					graphics2D.setPaint( ((BasicShape)shapesDrawn.get(i)).getColor() );
@@ -1182,8 +1200,8 @@ public void openPreviousFile(File file){
 				}
 			}
 			repaint();
-			System.out.println(current_color);
-			changeColor(Color.BLACK);
+			//System.out.println(current_color);
+			//changeColor(Color.BLACK);
 			shapeSelected = null;
 		}
 		
