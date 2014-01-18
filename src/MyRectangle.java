@@ -79,13 +79,14 @@ public class MyRectangle extends Rectangle implements BasicShape{
 	
 	public void changeResizeRect(int pos, int x, int y){
 		points[pos].setRect(x, y);
-		updateSize();
+		updateRect();
 	}
 	
-	public void updateSize(){
+	public void updateRect(){
 		double width = Math.abs(points[0].getCenterX() - points[1].getCenterX());
 		double height = Math.abs(points[0].getCenterY() - points[1].getCenterY());
-		this.setRect(x, y, width, height);
+		this.setRect(points[0].getCenterX(), points[0].getCenterY(), width, height);
 	}
+	
 
 }

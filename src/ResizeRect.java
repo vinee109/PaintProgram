@@ -35,8 +35,12 @@ public class ResizeRect extends MyRectangle{
 		return shape;
 	}
 	
-	public void setRect(int x, int y){
-		this.setRect(x - SIZE/2, y - SIZE/2, SIZE, SIZE);
+	public void setRect(int center_x, int center_y){
+		this.setRect(center_x - SIZE/2, center_y - SIZE/2, SIZE, SIZE);
+	}
+	
+	public Point getCenter(){
+		return new Point((int)this.getCenterX(), (int)this.getCenterY());
 	}
 	
 	

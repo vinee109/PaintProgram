@@ -209,7 +209,6 @@ public class PadDraw extends JComponent {
 			image = createImage(getSize().width, getSize().height);
 			graphics2D = (Graphics2D)image.getGraphics();
 			graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
 			clear();
 		}
 
@@ -254,8 +253,6 @@ public class PadDraw extends JComponent {
 					}
 				}
 			}
-			g.setStroke(new BasicStroke(thickness));
-			g.setPaint(current_color);
 		}
 		if(option == SELECT){
 			if(currentRectSelect!= null){
@@ -271,18 +268,26 @@ public class PadDraw extends JComponent {
 	                    rectToDrawSelect.width - 1, rectToDrawSelect.height - 1);
 				rectToDrawSelect.setSize(0, 0);
 			}
-			g.setStroke(new BasicStroke(thickness));
-			g.setColor(current_color);
 		}
 		if(option == RESIZE){
 			for (Shape shape : shapesDrawn){
+				g.setPaint(((BasicShape)shape).getColor());
+				g.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
 				g.draw(shape);
 				for (ResizeRect rect : ((BasicShape)shape).getPoints() ){
+					g.setPaint(Color.BLACK);
+					g.setStroke(new BasicStroke(1));
 					g.draw(rect);
 					g.fill(rect);
 				}
 			}
 		}
+		resetGraphic(g);
+	}
+	
+	public void resetGraphic(Graphics2D g){
+		g.setPaint(current_color);
+		g.setStroke(new BasicStroke(thickness));
 	}
 
 	public void clear(){
@@ -344,6 +349,7 @@ public class PadDraw extends JComponent {
 				
 				//draws the rectangles
 				ResizeRect [] args = {startPt, endPt};
+				((Line)shape).setPoints(args);
 				addToResizeRectsAndDraw(args);
 			}
 			else if ( shape instanceof Circle){
@@ -354,6 +360,7 @@ public class PadDraw extends JComponent {
 						new ResizeRect(new Point(center.x, center.y + radius), shape),
 						new ResizeRect(new Point(center.x - radius, center.y), shape),
 						new ResizeRect(new Point(center.x + radius, center.y), shape)};
+				((Circle)shape).setPoints(args);
 				addToResizeRectsAndDraw(args);
 			}
 			else if ( shape instanceof Arc){
@@ -1274,24 +1281,22 @@ public class PadDraw extends JComponent {
 		}
 		
 		public void mouseDragged(MouseEvent e){
-			((BasicShape)shapeR).changeResizeRect(pos, e.getX(), e.getY());
-			clear();
+			if (shapeR != null){
+				((BasicShape)shapeR).changeResizeRect(pos, e.getX(), e.getY());
+				clear();
+			}
 		}
 		
 		public void mouseReleased(MouseEvent e){
-			graphics2D.draw(shapeR);
-			repaint();
-		}
-		
-		public ResizeRect grabSelectedRect(int x, int y){
-			for (ResizeRect rect: resizeRects){
-				//System.out.println(rect);
-				//System.out.println(rect.isInside(x, y));
-				if ( rect.isInside(x, y))
-					return rect;
+			for ( Shape shape : shapesDrawn){
+				graphics2D.setPaint(((BasicShape)shape).getColor());
+				graphics2D.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
+				graphics2D.draw(shape);
 			}
-			return null;
+			repaint();
+			shapeR = null;
 		}
+	
 	}
 	
 	//******************************* Selection ***************************************

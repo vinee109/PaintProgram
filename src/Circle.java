@@ -9,6 +9,7 @@ public class Circle extends Ellipse2D.Double implements BasicShape{
 	private Point center;
 	private double radius;
 	private Connection [] connectPts;
+	private ResizeRect [] points;
 	
 	public Circle(){
 	}
@@ -66,9 +67,32 @@ public class Circle extends Ellipse2D.Double implements BasicShape{
 		return connectPts;
 	}
 
-	@Override
+	public void setPoints(ResizeRect[] args){
+		points = args;
+	}
+	
 	public ResizeRect[] getPoints() {
-		// TODO Auto-generated method stub
-		return null;
+		return points;
+	}
+
+	public void changeResizeRect(int pos, int x, int y) {
+		double r = getDistFromCenter(new Point(x, y));
+		points[0].setRect((int)(center.x + r), center.y);
+		points[1].setRect((int)(center.x - r), center.y);
+		points[2].setRect(center.x, (int)(center.y + r));
+		points[3].setRect(center.x, (int)(center.y - r));
+		updateCirc();
+	}
+	
+	public double getDistFromCenter(Point p){
+		return Point.distance(center.x, center.y, p.x, p.y);
+	}
+	
+	public void updateCirc(){
+		radius = getDistFromCenter(points[0].getCenter());
+		this.x = center.x - radius;
+		this.y = center.y - radius;
+		this.width = radius*2;
+		this.height = radius*2;
 	}
 }

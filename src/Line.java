@@ -59,9 +59,13 @@ public class Line extends Line2D.Double implements BasicShape{
 		return points;
 	}
 
-	@Override
 	public void changeResizeRect(int pos, int x, int y) {
-		// TODO Auto-generated method stub
-		
+		points[pos].setRect(x, y);
+		updateLine();
+	}
+	
+	public void updateLine(){
+		this.setLine(points[0].getCenterX(), points[0].getCenterY(), 
+				points[1].getCenterX(), points[1].getCenterY());
 	}
 }
