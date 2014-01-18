@@ -81,5 +81,17 @@ public class Group extends Rectangle implements BasicShape{
 	public ArrayList<Shape> getContainedShapes(){
 		return containedShapes;
 	}
+
+	@Override
+	public ResizeRect[] getPoints() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void changeResizeRect(int pos, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -65,4 +65,10 @@ public class Circle extends Ellipse2D.Double implements BasicShape{
 	public Connection[] getConnections(){
 		return connectPts;
 	}
+
+	@Override
+	public ResizeRect[] getPoints() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

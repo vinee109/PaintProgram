@@ -7,6 +7,7 @@ public class MyRectangle extends Rectangle implements BasicShape{
 	private Color color;
 	private int thickness;
 	private Connection [] connectPts;
+	private ResizeRect [] points;
 	
 	public MyRectangle(int x, int y, int width, int height){
 		super(x, y, width, height);
@@ -36,6 +37,13 @@ public class MyRectangle extends Rectangle implements BasicShape{
 		setConnections(x, y, width, height);
 	}
 
+	public void setPoints(ResizeRect [] args){
+		points = args;
+	}
+	
+	public ResizeRect [] getPoints(){
+		return points;
+	}
 	public void setConnections(int x, int y, int width, int height){
 		connectPts = new Connection[9];
 		connectPts[0] = new Connection(x + width/2, y + height/2);
@@ -67,6 +75,17 @@ public class MyRectangle extends Rectangle implements BasicShape{
 	
 	public Connection [] getConnections(){
 		return connectPts;
+	}
+	
+	public void changeResizeRect(int pos, int x, int y){
+		points[pos].setRect(x, y);
+		updateSize();
+	}
+	
+	public void updateSize(){
+		double width = Math.abs(points[0].getCenterX() - points[1].getCenterX());
+		double height = Math.abs(points[0].getCenterY() - points[1].getCenterY());
+		this.setRect(x, y, width, height);
 	}
 
 }

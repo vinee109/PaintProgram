@@ -9,9 +9,6 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Ellipse2D.Double;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
@@ -52,6 +49,8 @@ public class PadDraw extends JComponent {
 	PadDrawListener selectAdapter;
 	PadDrawListener resizeAdapter;
 	PadDrawListener current = null;
+	
+	ResizeRect resizeRectSelected;
 	
 	//for drawing rectangles
 	MyRectangle currentRect = null;
@@ -275,6 +274,15 @@ public class PadDraw extends JComponent {
 			g.setStroke(new BasicStroke(thickness));
 			g.setColor(current_color);
 		}
+		if(option == RESIZE){
+			for (Shape shape : shapesDrawn){
+				g.draw(shape);
+				for (ResizeRect rect : ((BasicShape)shape).getPoints() ){
+					g.draw(rect);
+					g.fill(rect);
+				}
+			}
+		}
 	}
 
 	public void clear(){
@@ -321,9 +329,10 @@ public class PadDraw extends JComponent {
 				Point bottomRight = new Point(topLeft.x + width, topLeft.y + height);
 				ResizeRect [] args = {
 						new ResizeRect(topLeft, shape), 
-						new ResizeRect(topRight, shape), 
-						new ResizeRect(bottomLeft, shape), 
+						//new ResizeRect(topRight, shape), 
+						//new ResizeRect(bottomLeft, shape), 
 						new ResizeRect(bottomRight, shape)};
+				((MyRectangle)shape).setPoints(args);
 				addToResizeRectsAndDraw(args);
 				
 			}
@@ -371,7 +380,6 @@ public class PadDraw extends JComponent {
 		}
 	}
 	
-	
 	//checks if user has drawn stuff
 	public boolean openChecking(File f){
 		if ( shapesDrawn.size() > 0 ){
@@ -396,7 +404,7 @@ public class PadDraw extends JComponent {
 		return true;
 	}
 	
-public void openPreviousFile(File file){
+	public void openPreviousFile(File file){
 		Scanner reader;
 		if ( openChecking(file) ){
 			try{
@@ -942,10 +950,11 @@ public void openPreviousFile(File file){
 	}
 	
 	public Arc2D makeArc(Point s, Point mid, Point e){
-		
+		/*
 		System.out.println("s = " + s);
 		System.out.println("mid = " + mid);
 		System.out.println("e = " + e);
+		*/
 		Point c = getCircleCenter(s, mid, e);
 		  double radius = c.distance(s);
 
@@ -1036,6 +1045,7 @@ public void openPreviousFile(File file){
 				x = e.getX();
 				y = e.getY();
 			}
+			System.out.println("(" + x + ", " + y + ")");
 			initialX = x;
 			initialY = y;
 			/*
@@ -1071,6 +1081,7 @@ public void openPreviousFile(File file){
     			graphics2D.draw(arc.getBounds());
     			repaint();
     			shapesDrawn.add(arc);
+    			System.out.println("(" + arc.x + ", " + arc.y + ")");
     		}
             mousePressed(e);
 		}
@@ -1234,22 +1245,42 @@ public void openPreviousFile(File file){
 	
 	//******************************* Resize ******************************************
 	private class ResizeListener extends PadDrawListener{
+		Shape shapeR;
+		int pos;
+		
+		public void checkShape(int x, int y){
+			for (Shape shape: shapesDrawn){
+				ResizeRect [] shapePts = ((BasicShape)shape).getPoints();
+				if ( shapePts != null){
+					for ( int i = 0; i < shapePts.length; i++){
+						if ( shapePts[i].contains(x, y)){
+							pos = i;
+							shapeR = shape;
+							return;
+						}
+					}
+				}
+			}
+		}
 		
 		public void mousePressed(MouseEvent e){
 			//System.out.println("clicked!");
 			int x = e.getX();
 			int y = e.getY();
-			//System.out.println("(" + x + ", " + y + ")");
-			ResizeRect rectSelected = grabSelectedRect(x, y);
-			//System.out.println(rectSelected);
-			//System.out.println(resizeRects.size());
-			if ( rectSelected != null ){
-				System.out.println(rectSelected.getShape());
-			}
+			checkShape(x, y);
 		}
 		
 		public void mouseMoved(MouseEvent e){
-			
+		}
+		
+		public void mouseDragged(MouseEvent e){
+			((BasicShape)shapeR).changeResizeRect(pos, e.getX(), e.getY());
+			clear();
+		}
+		
+		public void mouseReleased(MouseEvent e){
+			graphics2D.draw(shapeR);
+			repaint();
 		}
 		
 		public ResizeRect grabSelectedRect(int x, int y){

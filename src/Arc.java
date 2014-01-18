@@ -35,4 +35,10 @@ public class Arc extends Arc2D.Double implements BasicShape{
 	public void setThickness(int t){
 		thickness = t;
 	}
+
+	@Override
+	public ResizeRect[] getPoints() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

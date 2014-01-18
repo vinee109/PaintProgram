@@ -7,6 +7,7 @@ public class Line extends Line2D.Double implements BasicShape{
 	private Color color;
 	private int thickness;
 	private Connection [] connectPts;
+	private ResizeRect [] points;
 	
 	public Line(){
 		
@@ -48,5 +49,19 @@ public class Line extends Line2D.Double implements BasicShape{
 	
 	public int getThickness(){
 		return thickness;
+	}
+
+	public void setPoints(ResizeRect [] args){
+		points = args;
+	}
+
+	public ResizeRect[] getPoints() {
+		return points;
+	}
+
+	@Override
+	public void changeResizeRect(int pos, int x, int y) {
+		// TODO Auto-generated method stub
+		
 	}
 }

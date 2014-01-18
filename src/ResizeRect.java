@@ -35,5 +35,9 @@ public class ResizeRect extends MyRectangle{
 		return shape;
 	}
 	
+	public void setRect(int x, int y){
+		this.setRect(x - SIZE/2, y - SIZE/2, SIZE, SIZE);
+	}
+	
 	
 }
