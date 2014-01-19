@@ -38,6 +38,7 @@ public class PadDraw extends JComponent {
 	public final static int MOVE = 5;
 	public final static int RESIZE = 6;
 	public final static int SELECT = 7;
+	public final static int ERASE = 8;
 	
 	//Mouse listeners for each shape;
 	PadDrawListener lineAdapter;
@@ -48,6 +49,7 @@ public class PadDraw extends JComponent {
 	PadDrawListener moveAdapter;
 	PadDrawListener selectAdapter;
 	PadDrawListener resizeAdapter;
+	PadDrawListener eraseAdapter;
 	PadDrawListener current = null;
 	
 	boolean mouseReleased = false;
@@ -152,6 +154,9 @@ public class PadDraw extends JComponent {
 			case SELECT: addMouseMotionListener(selectAdapter);
 				addMouseListener(selectAdapter);
 				current = selectAdapter;
+			case ERASE: addMouseMotionListener(eraseAdapter);
+				addMouseListener(eraseAdapter);
+				current = eraseAdapter;
 		}
 		if ( current != null)
 			current.changeSnapEnabled(snapEnabled);
@@ -178,7 +183,14 @@ public class PadDraw extends JComponent {
 	
 	public void drawStoredShapes(){
 		for (Shape shape : shapesDrawn){
-			graphics2D.draw(shape);
+			if (shape instanceof Group){
+				drawGroup((Group)shape, graphics2D);
+			}
+			else{
+				graphics2D.setColor(((BasicShape)shape).getColor());
+				graphics2D.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
+				graphics2D.draw(shape);
+			}
 		}
 	}
 	
@@ -191,6 +203,7 @@ public class PadDraw extends JComponent {
 		moveAdapter = new MoveListener();
 		resizeAdapter = new ResizeListener();
 		selectAdapter = new SelectListener();
+		eraseAdapter = new EraseListener();
 	}
 	
 	//this is the painting bit
@@ -1168,6 +1181,12 @@ public class PadDraw extends JComponent {
 		g.setStroke(new BasicStroke(thickness));
 	}
 	
+	public boolean checkIfSelected(Shape shape, MouseEvent e){
+		Point p = e.getPoint();
+		Rectangle mouseRect = new Rectangle(p.x - 2, p.y - 2, 4, 4);
+		return shape.intersects(mouseRect);
+	}
+	
 	private class MoveListener extends PadDrawListener{
 		int preX;
 		int preY;
@@ -1176,12 +1195,7 @@ public class PadDraw extends JComponent {
 		double lineX1, lineY1;
 		double lineX2, lineY2;
 		ResizeRect [] initPts;
-		
-		public boolean checkIfSelected(Shape shape, MouseEvent e){
-			Point p = e.getPoint();
-			Rectangle mouseRect = new Rectangle(p.x - 2, p.y - 2, 4, 4);
-			return shape.intersects(mouseRect);
-		}
+	
 		public void mousePressed(MouseEvent e){
 			int x = e.getX();
 			int y = e.getY();
@@ -1344,8 +1358,7 @@ public class PadDraw extends JComponent {
 			shapeR = null;
 		}
 	
-	}
-//**************************************** Select ***********************************************	
+	}	
 	//******************************* Selection ***************************************
 	public void updateDrawableRectSelect(int compWidth, int compHeight){
 		int x = currentRectSelect.x;
@@ -1437,6 +1450,29 @@ public class PadDraw extends JComponent {
         
 		public void mouseMoved(MouseEvent e){
 			
+		}
+		
+	}
+	
+	//*****************************Erase ***********************************************
+	private class EraseListener extends PadDrawListener{
+
+		public Shape grabSelectedShape(MouseEvent e){
+			Rectangle mouseRect = new Rectangle(e.getX() - 2, e.getY() - 2, 4, 4);
+			for ( Shape shape: shapesDrawn){
+				if ( shape.intersects(mouseRect) )
+					return shape;
+			}
+			return null;
+		}
+		public void mousePressed(MouseEvent e){
+			Shape selectedShape = grabSelectedShape(e);
+			if ( selectedShape != null ){
+				shapesDrawn.remove(selectedShape);
+				clear();
+				drawStoredShapes();
+				repaint();
+			}
 		}
 		
 	}

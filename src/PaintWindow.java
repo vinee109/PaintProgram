@@ -200,6 +200,15 @@ public class PaintWindow extends JFrame{
 		});
 		panel.add(selectButton);
 		
+		JButton eraseButton = new JButton("Erase");
+		eraseButton.setPreferredSize(new Dimension(20,20));
+		eraseButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				drawPad.setOption(PadDraw.ERASE);
+			}
+		});
+		panel.add(eraseButton);
+		
 		//creates the clear button
 		JButton clearButton = new JButton("Clear");
 		clearButton.addActionListener(new ActionListener(){
