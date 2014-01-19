@@ -88,5 +88,11 @@ public class MyRectangle extends Rectangle implements BasicShape{
 		this.setRect(points[0].getCenterX(), points[0].getCenterY(), width, height);
 	}
 	
+	public void setLocation(int xCoord, int yCoord){
+		super.setLocation(xCoord, yCoord);
+		points[0].setRect(xCoord, yCoord);
+		points[1].setRect(xCoord + width, yCoord + height);
+		
+	}
 
 }

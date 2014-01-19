@@ -50,7 +50,7 @@ public class PadDraw extends JComponent {
 	PadDrawListener resizeAdapter;
 	PadDrawListener current = null;
 	
-	ResizeRect resizeRectSelected;
+	boolean mouseReleased = false;
 	
 	//for drawing rectangles
 	MyRectangle currentRect = null;
@@ -237,7 +237,7 @@ public class PadDraw extends JComponent {
 		}
 		
 		if(option == MOVE){
-			if (shapeSelected != null){
+			//if (shapeSelected != null){
 				//System.out.println(shapesSaved.size());
 				for (int i = 0; i < shapesDrawn.size(); i++){
 					BasicShape shape = (BasicShape) shapesDrawn.get(i);
@@ -252,7 +252,7 @@ public class PadDraw extends JComponent {
 						g.draw(shape);
 					}
 				}
-			}
+			
 		}
 		if(option == SELECT){
 			if(currentRectSelect!= null){
@@ -266,7 +266,8 @@ public class PadDraw extends JComponent {
 			    g.setColor(Color.BLACK);
 				g.drawRect(rectToDrawSelect.x, rectToDrawSelect.y, 
 	                    rectToDrawSelect.width - 1, rectToDrawSelect.height - 1);
-				rectToDrawSelect.setSize(0, 0);
+				if ( mouseReleased )
+					rectToDrawSelect.setSize(0,0);
 			}
 		}
 		if(option == RESIZE){
@@ -1200,9 +1201,11 @@ public class PadDraw extends JComponent {
 		public void mouseReleased(MouseEvent e){
 			//System.out.println("mouse released");
 			updateLocation(e);
-			graphics2D.setColor(((BasicShape) shapeSelected).getColor());
-			graphics2D.setStroke( new BasicStroke(((BasicShape)shapeSelected).getThickness() ));
-			graphics2D.draw(shapeSelected);
+			if ( shapeSelected != null ){
+				graphics2D.setColor(((BasicShape) shapeSelected).getColor());
+				graphics2D.setStroke( new BasicStroke(((BasicShape)shapeSelected).getThickness() ));
+				graphics2D.draw(shapeSelected);
+			}
 			
 			//System.out.println("size of shapesDrawn = " + shapesDrawn.size() );
 			for ( int i = 0; i < shapesDrawn.size(); i++ ){
@@ -1296,7 +1299,7 @@ public class PadDraw extends JComponent {
 		}
 	
 	}
-	
+//**************************************** Select ***********************************************	
 	//******************************* Selection ***************************************
 	public void updateDrawableRectSelect(int compWidth, int compHeight){
 		int x = currentRectSelect.x;
@@ -1337,7 +1340,7 @@ public class PadDraw extends JComponent {
                         rectToDrawSelect.width, rectToDrawSelect.height);
             rectToDrawSelect.setBounds(x, y, width, height);
         } else {
-            rectToDrawSelect = new Rectangle(x, y, width, height);
+            rectToDrawSelect = new MyRectangle(x, y, width, height);
         }
     }
 	
@@ -1357,7 +1360,9 @@ public class PadDraw extends JComponent {
 		public void mousePressed(MouseEvent e) {
 			int x = e.getX();
 			int y = e.getY();
-            currentRectSelect = new Rectangle(x, y, 0, 0);
+			if (rectToDrawSelect != null )
+				rectToDrawSelect = null;
+            currentRectSelect = new MyRectangle(x, y, 0, 0);
             updateDrawableRectSelect(getWidth(), getHeight());
             repaint();
             
@@ -1370,6 +1375,7 @@ public class PadDraw extends JComponent {
  
         public void mouseReleased(MouseEvent e) {
             updateSize(e);
+            mouseReleased = true;
         }
         
         public void updateSize(MouseEvent e) {
@@ -1378,9 +1384,9 @@ public class PadDraw extends JComponent {
             currentRectSelect.setSize(x - currentRectSelect.x,
                                 y - currentRectSelect.y);
             updateDrawableRectSelect(getWidth(), getHeight());
-            Rectangle totalRepaint = rectToDrawSelect.union(previousRectDrawnSelect);
-            repaint(totalRepaint.x - thickness, totalRepaint.y - thickness,
-                    totalRepaint.width + 2*thickness, totalRepaint.height + 2*thickness);
+            Rectangle totalRepaint = previousRectDrawnSelect.union(rectToDrawSelect);
+            repaint(totalRepaint.x, totalRepaint.y,
+                    totalRepaint.width, totalRepaint.height);
         }
         
 		public void mouseMoved(MouseEvent e){
