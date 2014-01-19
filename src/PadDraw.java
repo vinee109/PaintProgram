@@ -272,9 +272,15 @@ public class PadDraw extends JComponent {
 		}
 		if(option == RESIZE){
 			for (Shape shape : shapesDrawn){
-				g.setPaint(((BasicShape)shape).getColor());
-				g.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
-				g.draw(shape);
+				if (shape instanceof Group){
+					drawGroup((Group)shape, g);
+				}
+				else{
+					g.setPaint(((BasicShape)shape).getColor());
+					g.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
+					g.draw(shape);
+				}
+				//g.draw(shape.getBounds());
 				for (ResizeRect rect : ((BasicShape)shape).getPoints() ){
 					g.setPaint(Color.BLACK);
 					g.setStroke(new BasicStroke(1));
@@ -368,10 +374,14 @@ public class PadDraw extends JComponent {
 				Point location = new Point((int)((Arc)shape).getBounds().x, (int)((Arc)shape).getBounds().y);
 				int height = (int) ((Arc)shape).height;
 				int width = (int) ((Arc)shape).width;
+				/*
 				ResizeRect [] args = {
 						new ResizeRect(location, shape),
 						new ResizeRect(new Point(location.x + width/2, location.y + height), shape),
 						new ResizeRect(new Point(location.x + width, location.y), shape)};
+				
+				*/
+				ResizeRect [] args = ((Arc)shape).getPoints();
 				addToResizeRectsAndDraw(args);
 			}
 		}
@@ -1085,11 +1095,21 @@ public class PadDraw extends JComponent {
 						arcToDraw.getArcType(),
 						current_color,
 						thickness);
+				arc.setInitial(new Point(initialX, initialY));
+				Point releasePoint = e.getPoint();
+				int width = (int) Math.abs(releasePoint.getX() - initialX);
+				int height = (int)Math.abs(releasePoint.getY() - initialY);
+				arc.setWidth(width);
+				arc.setHeight(height);
+				ResizeRect [] args = {
+						new ResizeRect(initialX, initialY, arc),
+						new ResizeRect(initialX + width/2, initialY + height, arc),
+						new ResizeRect(initialX + width, initialY, arc)
+				};
+				arc.setPoints(args);
     			graphics2D.draw(arc);
-    			graphics2D.draw(arc.getBounds());
     			repaint();
     			shapesDrawn.add(arc);
-    			System.out.println("(" + arc.x + ", " + arc.y + ")");
     		}
             mousePressed(e);
 		}
@@ -1134,18 +1154,18 @@ public class PadDraw extends JComponent {
 	
 	//******************************* Move ********************************************
 	
-	public void drawGroup(Group group){
-		graphics2D.setPaint(group.getColor());
-		graphics2D.setStroke(new BasicStroke(group.getThickness()));
-		graphics2D.draw(group);
+	public void drawGroup(Group group, Graphics2D g){
+		g.setPaint(group.getColor());
+		g.setStroke(new BasicStroke(group.getThickness()));
+		g.draw(group);
 		for (Shape shape: group.getContainedShapes()){
-			graphics2D.setPaint(((BasicShape)shape).getColor());
+			g.setPaint(((BasicShape)shape).getColor());
 			//System.out.println("thickness = " + ((BasicShape)shape).getThickness());
-			graphics2D.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
-			graphics2D.draw(shape);
+			g.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
+			g.draw(shape);
 		}
-		graphics2D.setPaint(current_color);
-		graphics2D.setStroke(new BasicStroke(thickness));
+		g.setPaint(current_color);
+		g.setStroke(new BasicStroke(thickness));
 	}
 	
 	private class MoveListener extends PadDrawListener{
@@ -1155,20 +1175,24 @@ public class PadDraw extends JComponent {
 		int initialy;
 		double lineX1, lineY1;
 		double lineX2, lineY2;
+		ResizeRect [] initPts;
 		
+		public boolean checkIfSelected(Shape shape, MouseEvent e){
+			Point p = e.getPoint();
+			Rectangle mouseRect = new Rectangle(p.x - 2, p.y - 2, 4, 4);
+			return shape.intersects(mouseRect);
+		}
 		public void mousePressed(MouseEvent e){
-			System.out.println("mouse pressed");
 			int x = e.getX();
 			int y = e.getY();
 			initialx = x;
 			initialy = y;
-			//System.out.println(shapesDrawn);
 			
 			//checks if a shape is selected
 			int i = 0;
 			while ( i < shapesDrawn.size() ){
-				//System.out.println(shapesDrawn.get(i));
-				if (shapesDrawn.get(i).getBounds().contains(x, y))
+				System.out.println();
+				if (checkIfSelected(shapesDrawn.get(i), e))
 					shapeSelected = shapesDrawn.get(i);
 				i++;
 			}
@@ -1179,6 +1203,10 @@ public class PadDraw extends JComponent {
 				lineY2 = ((Line)shapeSelected).y2;
 				//System.out.println("current");
 				//System.out.println("(" + lineX1 + ", " + lineY1 + ")" + " " + "(" + lineX2 + ", " + lineY2 + ")");
+			}
+			
+			if (shapeSelected instanceof Arc){
+				initPts = ((Arc) shapeSelected).getPoints();
 			}
 			
 			if (shapeSelected != null){
@@ -1211,7 +1239,7 @@ public class PadDraw extends JComponent {
 			for ( int i = 0; i < shapesDrawn.size(); i++ ){
 				//System.out.println(shapesDrawn.get(i));
 				if (shapesDrawn.get(i) instanceof Group){
-					drawGroup((Group)shapesDrawn.get(i));
+					drawGroup((Group)shapesDrawn.get(i), graphics2D);
 					
 				}
 				else{
@@ -1234,8 +1262,21 @@ public class PadDraw extends JComponent {
 				((Circle) shapeSelected).setLocation(preX + e.getX(), preY + e.getY());
 			}
 			if (shapeSelected instanceof Arc){
+				int distanceX = e.getX() - initialx;
+				int distanceY = e.getY() - initialy;
+				ResizeRect [] points = initPts;
+				for ( int i = 0; i < points.length; i++){
+					int x = initPts[i].getCenter().x;
+					int y = initPts[i].getCenter().y;
+					points[i].setRect(x + distanceX, y + distanceY);
+				}
+				Arc2D newArc = makeArc(points[0].getCenter(), points[1].getCenter(), points[2].getCenter());
+				((Arc)shapeSelected).setArc(newArc);
+				((Arc)shapeSelected).setPoints(points);
+				/*
 				((Arc2D.Double) shapeSelected).x = preX + e.getX();
 				((Arc2D.Double) shapeSelected).y = preY + e.getY();
+				*/
 			}
 			if (shapeSelected instanceof Line){
 				double distanceX = e.getX() - initialx;
@@ -1290,9 +1331,14 @@ public class PadDraw extends JComponent {
 		
 		public void mouseReleased(MouseEvent e){
 			for ( Shape shape : shapesDrawn){
-				graphics2D.setPaint(((BasicShape)shape).getColor());
-				graphics2D.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
-				graphics2D.draw(shape);
+				if (shape instanceof Group){
+					drawGroup((Group)shape, graphics2D);
+				}
+				else{
+					graphics2D.setPaint(((BasicShape)shape).getColor());
+					graphics2D.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
+					graphics2D.draw(shape);
+				}
 			}
 			repaint();
 			shapeR = null;

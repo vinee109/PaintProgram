@@ -69,7 +69,7 @@ public class PaintWindow extends JFrame{
 			}
 		});
 		
-		panel.setPreferredSize(new Dimension(32, 68));
+		panel.setPreferredSize(new Dimension(110, 68));
 		bottomPanel.setPreferredSize(new Dimension(68, 58));
 
 		//Creates a new container

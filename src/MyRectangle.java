@@ -21,6 +21,7 @@ public class MyRectangle extends Rectangle implements BasicShape{
 	public MyRectangle(MyRectangle rect) {
 		super(rect.x, rect.y, rect.width, rect.height);
 		setConnections(rect.x, rect.y, rect.width, rect.height);
+		initPoints();
 	}
 	
 	public MyRectangle(MyRectangle rect, Color c, int t){
@@ -28,6 +29,7 @@ public class MyRectangle extends Rectangle implements BasicShape{
 		setColor(c);
 		setThickness(t);
 		setConnections(rect.x, rect.y, rect.width, rect.height);
+		initPoints();
 	}
 	
 	public MyRectangle(int x, int y, int width, int height, Color c, int thick) {
@@ -35,8 +37,15 @@ public class MyRectangle extends Rectangle implements BasicShape{
 		setColor(c);
 		setThickness(thick);
 		setConnections(x, y, width, height);
+		initPoints();
 	}
 
+	public void initPoints(){
+		points = new ResizeRect[2];
+		points[0] = new ResizeRect(x, y, this);
+		points[1] = new ResizeRect(x + width, y + height, this);
+	}
+	
 	public void setPoints(ResizeRect [] args){
 		points = args;
 	}

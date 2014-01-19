@@ -19,6 +19,7 @@ public class Circle extends Ellipse2D.Double implements BasicShape{
 		center = new Point((int)(x+width/2) , (int)(y+height/2));
 		radius = width/2;
 		setConnections((int)(x+width/2), (int)(y+height/2), (int)(width/2));
+		initializePoints();
 	}
 	
 	public Circle(double x, double y, double width, double height, Color c, int t) {
@@ -28,6 +29,7 @@ public class Circle extends Ellipse2D.Double implements BasicShape{
 		center = new Point((int)(x+width/2) , (int)(y+height/2));
 		radius = height/2;
 		setConnections((int)(x+width/2), (int)(y+height/2), (int)(width/2));
+		initializePoints();
 	}
 	
 	public void setConnections(int center_x, int center_y, int radius){
@@ -37,6 +39,15 @@ public class Circle extends Ellipse2D.Double implements BasicShape{
 		connectPts[2] = new Connection(center_x - radius, center_y);
 		connectPts[3] = new Connection(center_x, center_y + radius);
 		connectPts[4] = new Connection(center_x, center_y - radius);
+	}
+	
+	public void initializePoints(){
+		points = new ResizeRect[4];
+		points[0] = new ResizeRect(center.x + (int)radius, center.y, this);
+		points[1] = new ResizeRect(center.x - (int)radius, center.y, this);
+		points[2] = new ResizeRect(center.x, center.y + (int)radius, this);
+		points[3] = new ResizeRect(center.x, center.y - (int)radius, this);
+		
 	}
 	
 	public void setThickness(int t){

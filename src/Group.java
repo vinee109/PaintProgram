@@ -46,7 +46,7 @@ public class Group extends Rectangle implements BasicShape{
 			g.draw(shape);
 		}
 	}
-	
+	// FIX GROUPING ISSUE
 	public void setLocation(int x, int y){
 		for (Shape shape: containedShapes){
 			int offsetX = shape.getBounds().x - this.x;
@@ -63,6 +63,9 @@ public class Group extends Rectangle implements BasicShape{
 			if (shape instanceof Arc){
 				((Arc) shape).x = x + offsetX;
 				((Arc) shape).y = y + offsetY;
+			}
+			if (shape instanceof Line){
+			
 			}
 		}
 		super.setLocation(x, y);
@@ -84,8 +87,8 @@ public class Group extends Rectangle implements BasicShape{
 
 	@Override
 	public ResizeRect[] getPoints() {
-		// TODO Auto-generated method stub
-		return null;
+		ResizeRect[] empty = new ResizeRect[0];
+		return empty;
 	}
 
 	@Override
