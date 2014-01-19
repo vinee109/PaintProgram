@@ -45,6 +45,9 @@ public class PaintWindow extends JFrame{
 		thicknessSlider = new JSlider(1, 100);
 		colorChooser = new JColorChooser();
 		
+		panel.setLayout(new GridLayout(2, 1));
+		JPanel topPart = new JPanel(new FlowLayout());
+		panel.add(topPart);
 		thicknessText.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				try{
@@ -69,7 +72,7 @@ public class PaintWindow extends JFrame{
 			}
 		});
 		
-		panel.setPreferredSize(new Dimension(110, 68));
+		panel.setPreferredSize(new Dimension(125, 68));
 		bottomPanel.setPreferredSize(new Dimension(68, 58));
 
 		//Creates a new container
@@ -131,7 +134,7 @@ public class PaintWindow extends JFrame{
 				//System.out.println(drawPad.getLocationOnScreen());
 			}
 		});
-		panel.add(lineButton);
+		topPart.add(lineButton);
 		
 		JButton straightLineButton = new JButton(new ImageIcon("icons/straightline.gif"));
 		straightLineButton.setPreferredSize(new Dimension(20,20));
@@ -140,7 +143,7 @@ public class PaintWindow extends JFrame{
 				drawPad.setOption(PadDraw.STRAIGHT_LINE);
 			}
 		});
-		panel.add(straightLineButton);
+		topPart.add(straightLineButton);
 		
 		JButton rectButton = new JButton(new ImageIcon("icons/rect.gif"));
 		rectButton.setPreferredSize(new Dimension(20,20));
@@ -149,7 +152,7 @@ public class PaintWindow extends JFrame{
 				drawPad.setOption(PadDraw.RECT);
 			}
 		});
-		panel.add(rectButton);
+		topPart.add(rectButton);
 		
 		JButton circButton = new JButton(new ImageIcon("icons/circ.gif"));
 		circButton.setPreferredSize(new Dimension(20,20));
@@ -158,7 +161,7 @@ public class PaintWindow extends JFrame{
 				drawPad.setOption(PadDraw.CIRC);
 			}
 		});
-		panel.add(circButton);
+		topPart.add(circButton);
 		
 		//arc button
 		JButton arcButton = new JButton(new ImageIcon("icons/arc.gif"));
@@ -168,7 +171,7 @@ public class PaintWindow extends JFrame{
 				drawPad.setOption(PadDraw.ARC);
 			}
 		});
-		panel.add(arcButton);
+		topPart.add(arcButton);
 		
 		//move button
 		JButton moveButton = new JButton("Move");
@@ -178,7 +181,7 @@ public class PaintWindow extends JFrame{
 				drawPad.setOption(PadDraw.MOVE);
 			}
 		});
-		panel.add(moveButton);
+		topPart.add(moveButton);
 		
 		//resize button
 		JButton resizeButton = new JButton("Resize");
@@ -189,7 +192,7 @@ public class PaintWindow extends JFrame{
 				drawPad.drawResizeRects();
 			}
 		});
-		panel.add(resizeButton);
+		topPart.add(resizeButton);
 		
 		JButton selectButton = new JButton(new ImageIcon("icons/selection.gif"));
 		selectButton.setPreferredSize(new Dimension(20,20));
@@ -198,16 +201,16 @@ public class PaintWindow extends JFrame{
 				drawPad.setOption(PadDraw.SELECT);
 			}
 		});
-		panel.add(selectButton);
+		topPart.add(selectButton);
 		
-		JButton eraseButton = new JButton("Erase");
+		JButton eraseButton = new JButton(new ImageIcon("icons/eraser.gif"));
 		eraseButton.setPreferredSize(new Dimension(20,20));
 		eraseButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				drawPad.setOption(PadDraw.ERASE);
 			}
 		});
-		panel.add(eraseButton);
+		topPart.add(eraseButton);
 		
 		//creates the clear button
 		JButton clearButton = new JButton("Clear");
@@ -216,7 +219,9 @@ public class PaintWindow extends JFrame{
 				drawPad.clearAll();
 			}
 		});
-		panel.add(clearButton);
+		topPart.add(clearButton);
+		
+		panel.add(new DimensionPanel());
 	}
 	
 	public void addMenuBar(){
