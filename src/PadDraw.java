@@ -1278,11 +1278,12 @@ public class PadDraw extends JComponent {
 			if (shapeSelected instanceof Arc){
 				int distanceX = e.getX() - initialx;
 				int distanceY = e.getY() - initialy;
-				ResizeRect [] points = initPts;
+				ResizeRect [] points = new ResizeRect[3];
 				for ( int i = 0; i < points.length; i++){
 					int x = initPts[i].getCenter().x;
 					int y = initPts[i].getCenter().y;
-					points[i].setRect(x + distanceX, y + distanceY);
+					points[i] = new ResizeRect(x + distanceX, y+distanceY, shapeSelected);
+					//points[i].setRect(x + distanceX, y + distanceY);
 				}
 				Arc2D newArc = makeArc(points[0].getCenter(), points[1].getCenter(), points[2].getCenter());
 				((Arc)shapeSelected).setArc(newArc);

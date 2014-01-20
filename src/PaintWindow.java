@@ -221,7 +221,7 @@ public class PaintWindow extends JFrame{
 		});
 		topPart.add(clearButton);
 		
-		panel.add(new DimensionPanel());
+		//panel.add(new DimensionPanel());
 	}
 	
 	public void addMenuBar(){

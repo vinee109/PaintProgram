@@ -65,7 +65,13 @@ public class Group extends Rectangle implements BasicShape{
 				((Arc) shape).y = y + offsetY;
 			}
 			if (shape instanceof Line){
-			
+				int offx1, offy1, offx2, offy2;
+				offx1 = (int) (shape.getBounds().x - ((Line)shape).getX1());
+				offy1 = (int) (shape.getBounds().y - ((Line)shape).getY1());
+				offx2 = (int) (shape.getBounds().x - ((Line)shape).getX2());
+				offy2 = (int) (shape.getBounds().y - ((Line)shape).getY2());
+				((Line)shape).setLine(x - offx1, y - offy1, x - offx2, y - offy2);
+				((Line)shape).initPoints();
 			}
 		}
 		super.setLocation(x, y);

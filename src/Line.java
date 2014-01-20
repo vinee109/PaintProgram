@@ -16,6 +16,7 @@ public class Line extends Line2D.Double implements BasicShape{
 	public Line(double x1, double y1, double x2, double y2){
 		super(x1, y1, x2, y2);
 		setConnections(x1, y1, x2, y2);
+		initPoints();
 	}
 
 	public Line(double x1, double y1, double x2, double y2, Color c, int t) {
@@ -23,6 +24,7 @@ public class Line extends Line2D.Double implements BasicShape{
 		color = c;
 		thickness = t;
 		setConnections(x1, y1, x2, y2);
+		initPoints();
 	}
 	
 	public void setConnections(double x1, double y1, double x2, double y2){
@@ -58,7 +60,12 @@ public class Line extends Line2D.Double implements BasicShape{
 	public ResizeRect[] getPoints() {
 		return points;
 	}
-
+	
+	public void initPoints(){
+		points = new ResizeRect[2];
+		points[0] = new ResizeRect((int)x1, (int)y1, this);
+		points[1] = new ResizeRect((int)x2, (int)y2, this);
+	}
 	public void changeResizeRect(int pos, int x, int y) {
 		points[pos].setRect(x, y);
 		updateLine();
