@@ -1173,7 +1173,6 @@ public class PadDraw extends JComponent {
 		g.draw(group);
 		for (Shape shape: group.getContainedShapes()){
 			g.setPaint(((BasicShape)shape).getColor());
-			//System.out.println("thickness = " + ((BasicShape)shape).getThickness());
 			g.setStroke(new BasicStroke(((BasicShape)shape).getThickness()));
 			g.draw(shape);
 		}
